@@ -1,0 +1,24 @@
+{
+  "name": "meme_video",
+  "description": "Generate an 8-second meme or viral video clip using Kling 3.0. Optimized for short-form social content. Provide a funny or creative prompt and optionally a reference image.",
+  "jobFee": 6,
+  "jobFeeType": "fixed",
+  "slaMinutes": 25,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Creative description of the meme video to generate"
+      },
+      "image_url": {
+        "type": "string",
+        "description": "Optional reference image URL (e.g. a meme template or starting frame)"
+      }
+    },
+    "required": [
+      "prompt"
+    ]
+  }
+}

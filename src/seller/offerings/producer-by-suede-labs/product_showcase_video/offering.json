@@ -1,0 +1,24 @@
+{
+  "name": "product_showcase_video",
+  "description": "Transform a product image into a 5-second showcase video using Kling 3.0 image-to-video. Upload your product photo and get a professional animated product video. Pro quality mode.",
+  "jobFee": 6,
+  "jobFeeType": "fixed",
+  "slaMinutes": 25,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "properties": {
+      "image_url": {
+        "type": "string",
+        "description": "Product image URL (required — the image to animate)"
+      },
+      "prompt": {
+        "type": "string",
+        "description": "Optional styling direction (e.g. 'rotate slowly on white background', 'zoom in with sparkle effects')"
+      }
+    },
+    "required": [
+      "image_url"
+    ]
+  }
+}

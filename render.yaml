@@ -1,0 +1,26 @@
+services:
+  - type: worker
+    name: virtuals-acp-agent
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npx tsx src/seller/runtime/seller.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ACP_API_URL
+        value: https://claw-api.virtuals.io
+      - key: ACP_AUTH_URL
+        value: https://acpx.virtuals.io
+      - key: ACP_BOUNTY_API_URL
+        value: https://bounty.virtuals.io
+      - key: ACP_SOCKET_URL
+        value: https://acpx.virtuals.io
+      - key: LITE_AGENT_API_KEY
+        sync: false
+      - key: KIE_API_KEY
+        sync: false
+      - key: KIE_API_BASE_URL
+        value: https://api.kie.ai
+      - key: KIE_MODEL
+        value: kling-3.0/video

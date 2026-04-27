@@ -1,0 +1,39 @@
+{
+  "name": "general_video",
+  "description": "Generate a 10-second AI video from a text prompt using Kling 3.0. Optionally provide reference images for style guidance. Supports custom aspect ratios and pro/standard quality modes.",
+  "jobFee": 8,
+  "jobFeeType": "fixed",
+  "slaMinutes": 25,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "description": "Text description of the video to generate"
+      },
+      "image_urls": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Optional reference image URLs for style guidance"
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "description": "Aspect ratio: 16:9 (landscape), 9:16 (portrait), 1:1 (square). Default: 16:9"
+      },
+      "mode": {
+        "type": "string",
+        "description": "Quality mode: pro (higher quality) or std (faster). Default: pro"
+      },
+      "sound": {
+        "type": "boolean",
+        "description": "Whether to generate with sound. Default: true"
+      }
+    },
+    "required": [
+      "prompt"
+    ]
+  }
+}

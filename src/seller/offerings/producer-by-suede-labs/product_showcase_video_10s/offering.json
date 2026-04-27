@@ -1,0 +1,24 @@
+{
+  "name": "product_showcase_video_10s",
+  "description": "Transform a product image into a 10-second premium showcase video using Kling 3.0 image-to-video. Extended duration for detailed product presentations, ads, and social media content. Pro quality mode.",
+  "jobFee": 10,
+  "jobFeeType": "fixed",
+  "slaMinutes": 25,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "properties": {
+      "image_url": {
+        "type": "string",
+        "description": "Product image URL (required — the image to animate)"
+      },
+      "prompt": {
+        "type": "string",
+        "description": "Optional styling direction (e.g. 'orbit around product with dramatic lighting', 'slow zoom with luxury feel')"
+      }
+    },
+    "required": [
+      "image_url"
+    ]
+  }
+}
