@@ -154,3 +154,6 @@ Verified live responses:
 - `POST https://app.suedeai.xyz/create-music` returned `402`
 - `POST https://app.suedeai.xyz/agent/video` returned `402`
 - `POST https://suede-ai-app.onrender.com/agents/commerce` returned `200`
+
+---
+*Founder mirror: [JasonColapietro/suede-x402-acp](https://github.com/JasonColapietro/suede-x402-acp)*
