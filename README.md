@@ -11,7 +11,7 @@ Suede Labs is focused first on programmable IP, creator ownership, provenance, l
 ## Public Bases
 
 ```text
-Primary app: https://app.suedeai.xyz
+Primary app: https://suedeai.ai
 Backend agent service: https://suede-ai-app.onrender.com
 ```
 
@@ -21,8 +21,8 @@ Minor agent social reference: `https://x.com/suedeagent`
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `https://app.suedeai.xyz/.well-known/x402` | x402 resource discovery |
-| `GET` | `https://app.suedeai.xyz/.well-known/x402.json` | x402 payment requirements and Bazaar metadata |
+| `GET` | `https://suedeai.ai/.well-known/x402` | x402 resource discovery |
+| `GET` | `https://suedeai.ai/.well-known/x402.json` | x402 payment requirements and Bazaar metadata |
 | `GET` | `https://suede-ai-app.onrender.com/.well-known/x402` | Backend x402 resource discovery |
 | `GET` | `https://suede-ai-app.onrender.com/.well-known/x402.json` | Backend x402 payment requirements and Bazaar metadata |
 
@@ -32,9 +32,9 @@ These endpoints return `402 Payment Required` with x402 payment requirements whe
 
 | Method | Endpoint | Price | Network | Asset | Purpose |
 |---|---|---:|---|---|---|
-| `POST` | `https://app.suedeai.xyz/agent/generate` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing music generation |
-| `POST` | `https://app.suedeai.xyz/create-music` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Public music creation endpoint |
-| `POST` | `https://app.suedeai.xyz/agent/video` | `5.00 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing short video generation |
+| `POST` | `https://suedeai.ai/agent/generate` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing music generation |
+| `POST` | `https://suedeai.ai/create-music` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Public music creation endpoint |
+| `POST` | `https://suedeai.ai/agent/video` | `5.00 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing short video generation |
 
 Payment recipient shown by the live x402 challenge:
 
@@ -45,7 +45,7 @@ Payment recipient shown by the live x402 challenge:
 ## Example x402 Challenge
 
 ```bash
-curl -i -X POST https://app.suedeai.xyz/create-music \
+curl -i -X POST https://suedeai.ai/create-music \
   -H 'content-type: application/json' \
   --data '{"prompt":"cinematic synthwave with live drums","durationSeconds":30,"style":"synthwave"}'
 ```
@@ -92,7 +92,7 @@ Successful response:
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `https://app.suedeai.xyz/.well-known/agent-card.json` | Public agent card |
+| `GET` | `https://suedeai.ai/.well-known/agent-card.json` | Public agent card |
 | `GET` | `https://suede-ai-app.onrender.com/.well-known/agent-card.json` | Backend agent card |
 
 Current live agent card advertises:
@@ -148,11 +148,11 @@ Last verified: 2026-05-01.
 
 Verified live responses:
 
-- `GET https://app.suedeai.xyz/.well-known/x402` returned `200`
-- `GET https://app.suedeai.xyz/.well-known/x402.json` returned `200`
-- `POST https://app.suedeai.xyz/agent/generate` returned `402`
-- `POST https://app.suedeai.xyz/create-music` returned `402`
-- `POST https://app.suedeai.xyz/agent/video` returned `402`
+- `GET https://suedeai.ai/.well-known/x402` returned `200`
+- `GET https://suedeai.ai/.well-known/x402.json` returned `200`
+- `POST https://suedeai.ai/agent/generate` returned `402`
+- `POST https://suedeai.ai/create-music` returned `402`
+- `POST https://suedeai.ai/agent/video` returned `402`
 - `POST https://suede-ai-app.onrender.com/agents/commerce` returned `200`
 
 ---
