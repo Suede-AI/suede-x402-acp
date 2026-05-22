@@ -32,9 +32,11 @@ These endpoints return `402 Payment Required` with x402 payment requirements whe
 
 | Method | Endpoint | Price | Network | Asset | Purpose |
 |---|---|---:|---|---|---|
-| `POST` | `https://app.suedeai.ai/agent/generate` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing music generation |
-| `POST` | `https://app.suedeai.ai/create-music` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Public music creation endpoint |
-| `POST` | `https://app.suedeai.ai/agent/video` | `5.00 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing short video generation |
+| `POST` | `https://app.suedeai.ai/agent/generate` | `0.20 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing music generation |
+| `POST` | `https://app.suedeai.ai/create-music` | `0.20 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Public music creation endpoint |
+| `POST` | `https://app.suedeai.ai/agent/video` | `1.50 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing short video generation |
+| `GET`  | `https://app.suedeai.ai/v1/rights/{assetHash}` | `0.005 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Suede Registry attestation lookup (rights, owner, IP account, on-chain metadata) |
+| `POST` | `https://app.suedeai.ai/v1/analyze` | `0.003 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Audio analysis (BPM, key, mode, energy, danceability, suggested genre) |
 | `POST` | `https://app.suedeai.ai/api/payments/x402/credits` | package-priced | Base | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing credit purchase |
 
 Payment recipients shown by live x402 challenges:
