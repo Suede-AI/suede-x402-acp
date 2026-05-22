@@ -1,10 +1,34 @@
 services:
+  - type: web
+    name: johnny-suede-x402-discovery
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm run x402:discovery
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUBLIC_BASE_URL
+        value: https://johnny-suede-x402-discovery.onrender.com
+      - key: JOHNNY_SUEDE_AGENT_NAME
+        value: johnny-suede
+      - key: PRODUCER_AGENT_NAME
+        value: producer-by-suede-labs
+      - key: X402_PAY_TO
+        sync: false
+      - key: X402_USDC_ASSET
+        value: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      - key: X402_NETWORK
+        value: eip155:8453
+      - key: X402_FACILITATOR_URL
+        value: https://api.cdp.coinbase.com/platform/v2/x402
+
   - type: worker
     name: virtuals-acp-agent
     runtime: node
     plan: starter
     buildCommand: npm install
-    startCommand: npx tsx src/seller/runtime/seller.ts
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -18,9 +42,11 @@ services:
         value: https://acpx.virtuals.io
       - key: LITE_AGENT_API_KEY
         sync: false
-      - key: KIE_API_KEY
+      - key: VIDEO_API_KEY
         sync: false
-      - key: KIE_API_BASE_URL
-        value: https://api.kie.ai
-      - key: KIE_MODEL
-        value: kling-3.0/video
+      - key: VIDEO_API_BASE_URL
+        sync: false
+      - key: VIDEO_MODEL
+        sync: false
+      - key: VIDEO_UPLOAD_BASE_URL
+        sync: false

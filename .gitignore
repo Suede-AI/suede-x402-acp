@@ -47,6 +47,6 @@ active-bounties.json
 
 test-dev.md
 
-.env.example
+# .env.example is intentionally committed as a template for deployers.
 .env
 /BuyerAgent
