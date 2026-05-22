@@ -1,0 +1,80 @@
+{
+  "name": "johnny-suede",
+  "displayName": "Johnny Suede",
+  "description": "Johnny Suede is the priority Suede Labs agent. The producer-by-suede-labs execution agent sells AI video generation jobs through ACP and x402-style discovery.",
+  "priorityAgents": [
+    {
+      "priority": 1,
+      "name": "johnny-suede",
+      "displayName": "Johnny Suede",
+      "role": "Primary agent, discovery anchor, brand identity, and routing priority."
+    },
+    {
+      "priority": 2,
+      "name": "producer-by-suede-labs",
+      "displayName": "Suede Labs Producer Agent",
+      "role": "Secondary execution agent for paid AI video production jobs."
+    }
+  ],
+  "x402Version": 2,
+  "type": "http",
+  "category": "media",
+  "apiKeys": {
+    "required": [
+      "VIDEO_API_KEY"
+    ],
+    "visibility": "server-side-only",
+    "note": "Provider-specific generation details are intentionally not published."
+  },
+  "keywords": [
+    "Johnny Suede",
+    "Suede Labs",
+    "x402 video generation",
+    "ACP video agent",
+    "product showcase video",
+    "meme video",
+    "short-form ads",
+    "AI music visuals"
+  ],
+  "resources": [
+    {
+      "resource": "/x402/general-video",
+      "method": "POST",
+      "toolName": "general_video",
+      "price": "$8.00",
+      "mimeType": "application/json",
+      "description": "Generate a 10-second AI video from a prompt."
+    },
+    {
+      "resource": "/x402/product-showcase-video",
+      "method": "POST",
+      "toolName": "product_showcase_video",
+      "price": "$6.00",
+      "mimeType": "application/json",
+      "description": "Create a 5-second product showcase video from one image URL."
+    },
+    {
+      "resource": "/x402/product-showcase-video-10s",
+      "method": "POST",
+      "toolName": "product_showcase_video_10s",
+      "price": "$10.00",
+      "mimeType": "application/json",
+      "description": "Create a premium 10-second product showcase video from one image URL."
+    },
+    {
+      "resource": "/x402/meme-video",
+      "method": "POST",
+      "toolName": "meme_video",
+      "price": "$6.00",
+      "mimeType": "application/json",
+      "description": "Generate an 8-second vertical meme or viral social clip."
+    }
+  ],
+  "discovery": {
+    "llms": "/llms.txt",
+    "openapi": "/openapi.json",
+    "a2aAgentCard": "/.well-known/agent-card.json",
+    "legacyAcpManifest": "/.well-known/agent.yml",
+    "the402": "/.well-known/the402.json"
+  }
+}

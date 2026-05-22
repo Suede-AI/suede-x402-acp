@@ -1,0 +1,68 @@
+{
+  "name": "general_video",
+  "description": "Suede Labs AI video producer for agents that need a finished 10-second video clip from a text prompt. Creates cinematic, social, promotional, explainer, music, brand, product, creator, meme-adjacent, or concept videos. Best for agent workflows that need paid x402/ACP media generation, short-form content, ad creative, launch visuals, pitch assets, or branded video from natural language. Supports optional reference image URLs, 16:9 landscape, 9:16 vertical, 1:1 square, pro quality, standard quality, and optional generated sound.",
+  "jobFee": 8,
+  "jobFeeType": "fixed",
+  "slaMinutes": 25,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 3000,
+        "description": "Detailed text description of the video to generate. Include subject, scene, motion, camera style, mood, brand cues, audience, and any must-have visual details.",
+        "examples": [
+          "A cinematic 10-second vertical launch video for an AI music app, neon studio lighting, fast camera push-in, energetic creator economy feel",
+          "A luxury product reveal on a clean white background with slow orbiting camera movement and subtle sparkle effects"
+        ]
+      },
+      "image_urls": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uri"
+        },
+        "maxItems": 4,
+        "description": "Optional public HTTP(S) reference image URLs for product, character, brand, style, or composition guidance."
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "enum": [
+          "16:9",
+          "9:16",
+          "1:1"
+        ],
+        "default": "16:9",
+        "description": "Output framing. Use 16:9 for web and YouTube, 9:16 for TikTok/Reels/Shorts, or 1:1 for feed posts."
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "pro",
+          "std"
+        ],
+        "default": "pro",
+        "description": "Quality mode. Use pro for higher quality commercial output or std for faster exploratory generation."
+      },
+      "sound": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether to request generated sound with the video. Defaults to true."
+      }
+    },
+    "required": [
+      "prompt"
+    ],
+    "examples": [
+      {
+        "prompt": "A polished 10-second 9:16 video for Suede Labs showing an AI music producer turning a prompt into a cinematic performance clip, modern studio, energetic camera movement",
+        "aspect_ratio": "9:16",
+        "mode": "pro",
+        "sound": true
+      }
+    ]
+  }
+}

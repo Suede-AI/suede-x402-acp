@@ -1,0 +1,132 @@
+{
+  "name": "johnny-suede",
+  "description": "Johnny Suede is the priority Suede Labs agent. The producer-by-suede-labs execution agent creates AI videos for other agents: product showcase videos, short-form ads, meme clips, launch creative, music visuals, and branded social content through ACP/x402-style paid agent commerce.",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "Suede Labs",
+    "url": "https://github.com/Suede-AI/producer-agent"
+  },
+  "documentationUrl": "https://github.com/Suede-AI/producer-agent#johnny-suede-agent-network",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "supportedInterfaces": [
+    {
+      "url": "https://johnny-suede-x402-discovery.onrender.com",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "acp://producer-by-suede-labs",
+      "protocolBinding": "ACP",
+      "protocolVersion": "virtuals-acp"
+    }
+  ],
+  "securitySchemes": {
+    "acpMarketplacePayment": {
+      "type": "apiKey",
+      "description": "Jobs are created and paid through the Virtuals ACP marketplace."
+    }
+  },
+  "security": [
+    {
+      "acpMarketplacePayment": []
+    }
+  ],
+  "metadata": {
+    "priorityAgents": [
+      {
+        "priority": 1,
+        "name": "johnny-suede",
+        "displayName": "Johnny Suede"
+      },
+      {
+        "priority": 2,
+        "name": "producer-by-suede-labs",
+        "displayName": "Suede Labs Producer Agent"
+      }
+    ],
+    "x402": "/.well-known/x402.json",
+    "the402": "/.well-known/the402.json",
+    "openapi": "/openapi.json",
+    "llms": "/llms.txt",
+    "apiKeys": {
+      "required": [
+        "VIDEO_API_KEY"
+      ],
+      "visibility": "server-side-only",
+      "note": "Provider-specific generation details are intentionally not published."
+    }
+  },
+  "skills": [
+    {
+      "id": "general_video",
+      "name": "General AI Video",
+      "description": "Generate a 10-second Kling 3.0 video from a text prompt with optional reference images, aspect ratio, quality mode, and sound.",
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ],
+      "examples": [
+        "Create a 10-second vertical launch video for an AI music app.",
+        "Generate a cinematic branded concept clip from this prompt and reference image."
+      ]
+    },
+    {
+      "id": "product_showcase_video",
+      "name": "5-Second Product Showcase Video",
+      "description": "Transform a product image URL into a polished 5-second product showcase video.",
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ],
+      "examples": [
+        "Create a fast ecommerce ad from this product image.",
+        "Animate this product with a clean white studio background."
+      ]
+    },
+    {
+      "id": "product_showcase_video_10s",
+      "name": "10-Second Premium Product Showcase Video",
+      "description": "Transform a product image URL into a premium 10-second product showcase video for launches, ads, demos, and landing pages.",
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ],
+      "examples": [
+        "Create a premium 10-second product launch video from this image.",
+        "Make a luxury product hero video with orbiting camera movement."
+      ]
+    },
+    {
+      "id": "meme_video",
+      "name": "Meme Video",
+      "description": "Generate an 8-second vertical meme or viral short-form video from a prompt and optional reference image.",
+      "inputModes": [
+        "application/json"
+      ],
+      "outputModes": [
+        "application/json"
+      ],
+      "examples": [
+        "Make a funny vertical meme clip for a crypto launch.",
+        "Create a fast social reaction video from this concept."
+      ]
+    }
+  ]
+}

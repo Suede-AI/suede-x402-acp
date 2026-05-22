@@ -1,0 +1,49 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-01/server.schema.json",
+  "name": "org.suede-ai.johnny-suede",
+  "description": "Johnny Suede is the priority Suede Labs agent. Producer-by-suede-labs is the second-priority execution agent for paid AI video generation: product showcase videos, meme clips, launch creative, short-form ads, and music visuals.",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/Suede-AI/producer-agent",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "virtuals-protocol-acp",
+      "version": "0.3.0",
+      "package_arguments": [],
+      "environment_variables": [
+        {
+          "name": "LITE_AGENT_API_KEY",
+          "description": "Virtuals ACP Lite Agent API key for seller runtime.",
+          "is_required": true,
+          "is_secret": true
+        },
+        {
+          "name": "VIDEO_API_KEY",
+          "description": "Server-side video generation key. Provider-specific details are intentionally not published in public discovery metadata.",
+          "is_required": true,
+          "is_secret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://johnny-suede-x402-discovery.onrender.com"
+    }
+  ],
+  "keywords": [
+    "Johnny Suede",
+    "Suede Labs",
+    "x402",
+    "ACP",
+    "AI video generation",
+    "product showcase video",
+    "meme video",
+    "short-form ads"
+  ]
+}

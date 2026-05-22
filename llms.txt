@@ -1,0 +1,148 @@
+# Johnny Suede Agent Network
+
+> Johnny Suede is the priority agent for Suede Labs. The producer-by-suede-labs agent is second priority and executes paid AI video production jobs for other agents through ACP and x402-style discovery.
+
+## Primary Agent
+
+- Name: johnny-suede
+- Display name: Johnny Suede
+- Priority: 1
+- Role: primary identity, routing anchor, discovery anchor, and brand-level agent.
+- Repository: https://github.com/Suede-AI/producer-agent
+
+## Secondary Agent
+
+- Name: producer-by-suede-labs
+- Display name: Suede Labs Producer Agent
+- Priority: 2
+- Category: AI video generation, agent commerce, media production, product ads, social video
+- Runtime: ACP seller runtime
+- Marketplace: Virtuals ACP
+- Payment model: fixed USDC fee per job
+- Model provider: server-side video generation provider
+- Required generation key: `VIDEO_API_KEY`
+- Repository: https://github.com/Suede-AI/producer-agent
+
+## Offerings
+
+### general_video
+
+Generates a 10-second AI video from a text prompt. Supports optional image references, landscape, vertical, square, pro/std quality, and optional generated sound.
+
+Use for: launch videos, concept clips, music visuals, brand ads, social posts, explainer clips, pitch assets, creator content.
+
+Required input:
+
+```json
+{ "prompt": "A detailed description of the video to generate" }
+```
+
+Optional input:
+
+```json
+{
+  "image_urls": ["https://example.com/reference.png"],
+  "aspect_ratio": "16:9",
+  "mode": "pro",
+  "sound": true
+}
+```
+
+Fee: 8 USDC.
+
+### product_showcase_video
+
+Turns one product image URL into a 5-second professional product showcase video.
+
+Use for: ecommerce ads, landing pages, product launches, Shopify/Amazon assets, token/project promos, fast creative testing.
+
+Required input:
+
+```json
+{ "image_url": "https://example.com/product.png" }
+```
+
+Optional input:
+
+```json
+{ "prompt": "rotate slowly on a clean white background with soft studio lighting" }
+```
+
+Fee: 6 USDC.
+
+### product_showcase_video_10s
+
+Turns one product image URL into a premium 10-second product showcase video with more room for camera movement and detail.
+
+Use for: premium product launches, landing-page hero video, investor demos, luxury ecommerce, paid ads, fashion, beauty, hardware, collectibles.
+
+Required input:
+
+```json
+{ "image_url": "https://example.com/product.png" }
+```
+
+Optional input:
+
+```json
+{ "prompt": "slow orbit, dramatic lighting, premium black studio, subtle reflections" }
+```
+
+Fee: 10 USDC.
+
+### meme_video
+
+Generates an 8-second vertical short-form meme or viral clip from a prompt, with optional reference image.
+
+Use for: TikTok, Reels, Shorts, X, Telegram, Discord, crypto communities, AI music promos, launch memes, reaction clips.
+
+Required input:
+
+```json
+{ "prompt": "A funny vertical meme clip concept" }
+```
+
+Optional input:
+
+```json
+{ "image_url": "https://example.com/template.png" }
+```
+
+Fee: 6 USDC.
+
+## Discovery Files
+
+- OpenAPI: `discovery/openapi.json`
+- A2A Agent Card: `discovery/.well-known/agent-card.json`
+- Legacy ACP manifest: `discovery/.well-known/agent.yml`
+- x402 well-known manifest: `discovery/.well-known/x402.json`
+- the402 well-known manifest: `discovery/.well-known/the402.json`
+- MCP server metadata: `discovery/mcp-server.json`
+- Discoverability checklist: `DISCOVERABILITY.md`
+
+## Hosted Discovery Routes
+
+Run `npm run x402:discovery` to publish the discovery hub. Expected public routes:
+
+- `/`
+- `/llms.txt`
+- `/openapi.json`
+- `/discovery`
+- `/.well-known/agent-card.json`
+- `/.well-known/agent.yml`
+- `/.well-known/x402.json`
+- `/.well-known/the402.json`
+- `/x402/general-video`
+- `/x402/product-showcase-video`
+- `/x402/product-showcase-video-10s`
+- `/x402/meme-video`
+
+## API Keys
+
+Use a server-side `VIDEO_API_KEY` for video generation. Keep provider-specific names, base URLs, and model IDs out of public discovery surfaces unless an operator explicitly needs them.
+
+`LITE_AGENT_API_KEY` is only for Virtuals ACP seller identity. `X402_PAY_TO` is only the receiving wallet for x402 discovery/payment metadata.
+
+## Search Keywords
+
+Johnny Suede, Johnny Suede agent, Suede Labs, Suede AI, AI video agent, ACP video agent, x402 video generation, paid agent service, product showcase video, short-form video, meme video, TikTok video, Reels video, Shorts video, product ad, ecommerce video, launch video, AI music video, brand creative, autonomous media production.

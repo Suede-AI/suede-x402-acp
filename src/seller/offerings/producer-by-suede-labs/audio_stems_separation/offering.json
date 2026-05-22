@@ -1,0 +1,66 @@
+{
+  "name": "audio_stems_separation",
+  "description": "Suede Labs audio stems separation service for agents, producers, DJs, remixers, sync teams, sample creators, mashup makers, music supervisors, and AI music pipelines that need to split an existing audio file into clean isolated stems: vocals, drums, bass, and melody/other. Supports remix workflows, karaoke creation, sample mining, music education, sync clearance prep, mashup production, ML training data prep, and paid x402/ACP agent commerce workflows. Input is a public audio URL; output is a set of stem URLs plus duration and detected key/tempo metadata.",
+  "jobFee": 0.5,
+  "jobFeeType": "fixed",
+  "slaMinutes": 8,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file to separate. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+      },
+      "stems": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "vocals",
+            "drums",
+            "bass",
+            "melody",
+            "other"
+          ]
+        },
+        "minItems": 1,
+        "maxItems": 5,
+        "default": [
+          "vocals",
+          "drums",
+          "bass",
+          "melody"
+        ],
+        "description": "Which stems to extract. Defaults to the standard four-stem split."
+      },
+      "output_format": {
+        "type": "string",
+        "enum": [
+          "wav",
+          "mp3",
+          "flac"
+        ],
+        "default": "wav",
+        "description": "Audio format for the returned stems. Use wav or flac for production work, mp3 for fast previews."
+      }
+    },
+    "required": [
+      "audio_url"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/track.mp3",
+        "stems": [
+          "vocals",
+          "drums",
+          "bass",
+          "melody"
+        ],
+        "output_format": "wav"
+      }
+    ]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "johnny-suede",
+  "displayName": "Johnny Suede",
+  "description": "Priority Suede Labs agent for paid AI video generation. Producer-by-suede-labs is the second-priority execution agent for product showcase videos, meme clips, short-form ads, launch creative, and music visuals.",
+  "serviceTypes": [
+    "automated_service",
+    "digital_product",
+    "media_generation"
+  ],
+  "payment": {
+    "protocols": [
+      "x402",
+      "ACP"
+    ],
+    "asset": "USDC",
+    "network": "Base"
+  },
+  "apiKeys": {
+    "required": [
+      "VIDEO_API_KEY"
+    ],
+    "visibility": "server-side-only",
+    "note": "Provider-specific generation details are intentionally not published."
+  },
+  "priorityAgents": [
+    {
+      "priority": 1,
+      "name": "johnny-suede"
+    },
+    {
+      "priority": 2,
+      "name": "producer-by-suede-labs"
+    }
+  ],
+  "catalog": [
+    {
+      "id": "general_video",
+      "name": "General AI Video",
+      "priceUsd": 8,
+      "endpoint": "/x402/general-video"
+    },
+    {
+      "id": "product_showcase_video",
+      "name": "5-Second Product Showcase Video",
+      "priceUsd": 6,
+      "endpoint": "/x402/product-showcase-video"
+    },
+    {
+      "id": "product_showcase_video_10s",
+      "name": "10-Second Premium Product Showcase Video",
+      "priceUsd": 10,
+      "endpoint": "/x402/product-showcase-video-10s"
+    },
+    {
+      "id": "meme_video",
+      "name": "Meme Video",
+      "priceUsd": 6,
+      "endpoint": "/x402/meme-video"
+    }
+  ],
+  "links": {
+    "llms": "/llms.txt",
+    "openapi": "/openapi.json",
+    "a2a": "/.well-known/agent-card.json",
+    "x402": "/.well-known/x402.json"
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Johnny Suede Agent Network",
+    "version": "1.0.0",
+    "description": "Agent-readable capability map for Johnny Suede first and producer-by-suede-labs second. The producer agent executes paid AI video jobs through the Virtuals ACP marketplace and x402-style discovery surfaces. Video generation runs server-side; provider-specific implementation details are intentionally not published."
+  },
+  "servers": [
+    {
+      "url": "https://johnny-suede-x402-discovery.onrender.com",
+      "description": "Johnny Suede hosted x402 discovery hub"
+    },
+    {
+      "url": "acp://producer-by-suede-labs",
+      "description": "Virtuals ACP marketplace agent"
+    }
+  ],
+  "tags": [
+    {
+      "name": "priority-agents",
+      "description": "Johnny Suede is priority 1; producer-by-suede-labs is priority 2."
+    },
+    {
+      "name": "video-generation",
+      "description": "AI video generation offerings sold by Suede Labs"
+    }
+  ],
+  "paths": {
+    "/jobs/general_video": {
+      "post": {
+        "operationId": "createGeneralVideo",
+        "tags": [
+          "video-generation"
+        ],
+        "summary": "Generate a 10-second AI video",
+        "description": "Create a 10-second AI video from a prompt with optional reference images, aspect ratio, quality mode, and sound.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneralVideoRequest"
+              },
+              "examples": {
+                "launchVideo": {
+                  "value": {
+                    "prompt": "A polished 10-second 9:16 video for Suede Labs showing an AI music producer turning a prompt into a cinematic performance clip, modern studio, energetic camera movement",
+                    "aspect_ratio": "9:16",
+                    "mode": "pro",
+                    "sound": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ACP job accepted and processed through marketplace payment flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoDeliverable"
+                }
+              }
+            }
+          }
+        },
+        "x-acp-offering": {
+          "name": "general_video",
+          "fee_usdc": 8,
+          "sla_minutes": 25
+        }
+      }
+    },
+    "/jobs/product_showcase_video": {
+      "post": {
+        "operationId": "createProductShowcaseVideo",
+        "tags": [
+          "video-generation"
+        ],
+        "summary": "Create a 5-second product showcase video",
+        "description": "Turn one product image URL into a 5-second AI product showcase video.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductShowcaseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ACP job accepted and processed through marketplace payment flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoDeliverable"
+                }
+              }
+            }
+          }
+        },
+        "x-acp-offering": {
+          "name": "product_showcase_video",
+          "fee_usdc": 6,
+          "sla_minutes": 25
+        }
+      }
+    },
+    "/jobs/product_showcase_video_10s": {
+      "post": {
+        "operationId": "createPremiumProductShowcaseVideo",
+        "tags": [
+          "video-generation"
+        ],
+        "summary": "Create a premium 10-second product showcase video",
+        "description": "Turn one product image URL into an extended 10-second AI product showcase video for launches, landing pages, and ads.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductShowcaseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ACP job accepted and processed through marketplace payment flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoDeliverable"
+                }
+              }
+            }
+          }
+        },
+        "x-acp-offering": {
+          "name": "product_showcase_video_10s",
+          "fee_usdc": 10,
+          "sla_minutes": 25
+        }
+      }
+    },
+    "/jobs/meme_video": {
+      "post": {
+        "operationId": "createMemeVideo",
+        "tags": [
+          "video-generation"
+        ],
+        "summary": "Generate an 8-second vertical meme video",
+        "description": "Create an 8-second 9:16 AI meme or viral social clip from a prompt and optional reference image.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemeVideoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ACP job accepted and processed through marketplace payment flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoDeliverable"
+                }
+              }
+            }
+          }
+        },
+        "x-acp-offering": {
+          "name": "meme_video",
+          "fee_usdc": 6,
+          "sla_minutes": 25
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GeneralVideoRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "prompt"
+        ],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 3000
+          },
+          "image_urls": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "pro",
+              "std"
+            ],
+            "default": "pro"
+          },
+          "sound": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "ProductShowcaseRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "image_url"
+        ],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 1500
+          }
+        }
+      },
+      "MemeVideoRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "prompt"
+        ],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2000
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "VideoDeliverable": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "video"
+          },
+          "videoUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "model": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
