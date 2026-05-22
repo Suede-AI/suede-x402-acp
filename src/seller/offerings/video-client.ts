@@ -1,16 +1,19 @@
 /// <reference lib="dom" />
 /**
- * Shared Kie API client for Kling 3.0 video generation.
- * Ported from VirtualsAgent Python implementation.
+ * Shared server-side video generation client.
+ *
+ * Provider-specific URLs and model IDs are intentionally supplied through
+ * private environment variables so public discovery metadata does not disclose
+ * the upstream provider.
  */
 import "dotenv/config";
 
-const KIE_API_KEY = process.env.KIE_API_KEY ?? "";
-const KIE_API_BASE = (process.env.KIE_API_BASE_URL ?? "https://api.kie.ai").replace(/\/+$/, "");
-const KIE_MODEL = process.env.KIE_MODEL ?? "kling-3.0/video";
-const KIE_UPLOAD_BASE = "https://kieai.redpandaai.co";
+const VIDEO_API_KEY = process.env.VIDEO_API_KEY ?? "";
+const VIDEO_API_BASE = (process.env.VIDEO_API_BASE_URL ?? "").replace(/\/+$/, "");
+const VIDEO_MODEL = process.env.VIDEO_MODEL ?? "";
+const VIDEO_UPLOAD_BASE = (process.env.VIDEO_UPLOAD_BASE_URL ?? "").replace(/\/+$/, "");
 
-interface KieCreateOptions {
+interface VideoCreateOptions {
     prompt: string;
     duration?: number;       // seconds (5, 8, 10)
     aspectRatio?: string;    // "16:9" | "9:16" | "1:1"
@@ -20,20 +23,27 @@ interface KieCreateOptions {
     negativePrompt?: string;
 }
 
+function requireEnv(value: string, name: string): string {
+    if (!value) throw new Error(`${name} not configured`);
+    return value;
+}
+
 function headers(idempotencyKey?: string): Record<string, string> {
-    if (!KIE_API_KEY) throw new Error("KIE_API_KEY not configured");
     const h: Record<string, string> = {
-        Authorization: `Bearer ${KIE_API_KEY}`,
+        Authorization: `Bearer ${requireEnv(VIDEO_API_KEY, "VIDEO_API_KEY")}`,
         "Content-Type": "application/json",
     };
     if (idempotencyKey) h["Idempotency-Key"] = idempotencyKey;
     return h;
 }
 
-/** Create a Kling video generation task. Returns the taskId. */
-export async function createTask(opts: KieCreateOptions): Promise<string> {
+/** Create a video generation task. Returns the taskId. */
+export async function createTask(opts: VideoCreateOptions): Promise<string> {
+    const requestHeaders = headers();
+    const apiBase = requireEnv(VIDEO_API_BASE, "VIDEO_API_BASE_URL");
+    const model = requireEnv(VIDEO_MODEL, "VIDEO_MODEL");
     const payload = {
-        model: KIE_MODEL,
+        model,
         input: {
             prompt: opts.prompt,
             duration: String(opts.duration ?? 8),
@@ -46,31 +56,27 @@ export async function createTask(opts: KieCreateOptions): Promise<string> {
         },
     };
 
-    const resp = await fetch(`${KIE_API_BASE}/api/v1/jobs/createTask`, {
+    const resp = await fetch(`${apiBase}/api/v1/jobs/createTask`, {
         method: "POST",
-        headers: headers(),
+        headers: requestHeaders,
         body: JSON.stringify(payload),
     });
 
     if (!resp.ok) {
         const text = await resp.text();
-        throw new Error(`Kling create failed (${resp.status}): ${text}`);
+        throw new Error(`Video create failed (${resp.status}): ${text}`);
     }
 
     const data = await resp.json();
     if (data.code !== undefined && data.code !== 200) {
-        throw new Error(`Kling create failed: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
+        throw new Error(`Video create failed: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
     }
 
     const taskId = data?.data?.taskId ?? data?.data?.task_id ?? data?.taskId ?? "";
-    if (!taskId) throw new Error(`Kling did not return a taskId: ${JSON.stringify(data)}`);
+    if (!taskId) throw new Error(`Video provider did not return a taskId: ${JSON.stringify(data)}`);
     return String(taskId);
 }
 
-/**
- * Extract video URL from Kie status response.
- * Per docs, resultJson is a stringified JSON: {"resultUrls": ["https://..."]}
- */
 function extractVideoUrl(statusData: Record<string, any>): string | null {
     let resultJson = statusData.resultJson;
     if (typeof resultJson === "string") {
@@ -78,11 +84,9 @@ function extractVideoUrl(statusData: Record<string, any>): string | null {
     }
     if (!resultJson || typeof resultJson !== "object") return null;
 
-    // Primary key per docs
     if (Array.isArray(resultJson.resultUrls) && resultJson.resultUrls.length > 0) {
         return String(resultJson.resultUrls[0]).trim();
     }
-    // Fallbacks
     for (const key of ["result_urls", "videos"]) {
         const arr = resultJson[key];
         if (Array.isArray(arr) && arr.length > 0) return String(arr[0]).trim();
@@ -92,56 +96,52 @@ function extractVideoUrl(statusData: Record<string, any>): string | null {
     return null;
 }
 
-/** Poll a Kie task until completion. Returns the video URL. */
+/** Poll a task until completion. Returns the video URL. */
 export async function pollTask(
     taskId: string,
     { maxAttempts = 180, intervalMs = 5_000 } = {},
 ): Promise<string> {
+    const requestHeaders = headers();
+    const apiBase = requireEnv(VIDEO_API_BASE, "VIDEO_API_BASE_URL");
     for (let i = 0; i < maxAttempts; i++) {
         const resp = await fetch(
-            `${KIE_API_BASE}/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
-            { headers: headers() },
+            `${apiBase}/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
+            { headers: requestHeaders },
         );
 
         if (resp.ok) {
             const data = await resp.json();
             if (data.code !== undefined && data.code !== 200) {
-                throw new Error(`Kling poll error: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
+                throw new Error(`Video poll error: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
             }
 
             const statusData = (typeof data.data === "object" && data.data) ? data.data : {};
             const state = (statusData.state ?? "").toLowerCase();
 
             if (state === "fail") {
-                throw new Error(`Kling task failed: ${statusData.failMsg ?? statusData.failCode ?? "unknown error"}`);
+                throw new Error(`Video task failed: ${statusData.failMsg ?? statusData.failCode ?? "unknown error"}`);
             }
 
             if (state === "success") {
                 const url = extractVideoUrl(statusData);
                 if (url) return url;
-                throw new Error(`Kling task succeeded but no video URL found in resultJson`);
+                throw new Error("Video task succeeded but no video URL was returned");
             }
-
-            // states: waiting, queuing, generating — keep polling
         }
 
         await new Promise((r) => setTimeout(r, intervalMs));
     }
 
-    throw new Error(`Kling task ${taskId} timed out after ${maxAttempts} attempts`);
+    throw new Error(`Video task ${taskId} timed out after ${maxAttempts} attempts`);
 }
 
-/**
- * Upload a file to Kie's storage via URL.
- * Returns the hosted fileUrl on Kie's CDN.
- */
 export async function uploadFileByUrl(fileUrl: string): Promise<string> {
-    if (!KIE_API_KEY) throw new Error("KIE_API_KEY not configured");
-
-    const resp = await fetch(`${KIE_UPLOAD_BASE}/api/file-url-upload`, {
+    const requestHeaders = headers();
+    const uploadBase = requireEnv(VIDEO_UPLOAD_BASE, "VIDEO_UPLOAD_BASE_URL");
+    const resp = await fetch(`${uploadBase}/api/file-url-upload`, {
         method: "POST",
         headers: {
-            Authorization: `Bearer ${KIE_API_KEY}`,
+            Authorization: requestHeaders.Authorization,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -152,24 +152,19 @@ export async function uploadFileByUrl(fileUrl: string): Promise<string> {
 
     if (!resp.ok) {
         const text = await resp.text();
-        throw new Error(`Kie file upload failed (${resp.status}): ${text}`);
+        throw new Error(`Video file upload failed (${resp.status}): ${text}`);
     }
 
     const data = await resp.json();
     if (!data.success && data.code !== 200) {
-        throw new Error(`Kie file upload failed: ${data.msg ?? JSON.stringify(data)}`);
+        throw new Error(`Video file upload failed: ${data.msg ?? JSON.stringify(data)}`);
     }
 
-    // The actual API returns downloadUrl (not fileUrl as shown in some doc examples)
     const hostedUrl = data?.data?.downloadUrl ?? data?.data?.fileUrl;
-    if (!hostedUrl) throw new Error(`Kie upload did not return a URL: ${JSON.stringify(data)}`);
+    if (!hostedUrl) throw new Error(`Video upload did not return a URL: ${JSON.stringify(data)}`);
     return hostedUrl;
 }
 
-/**
- * Upload multiple image URLs to Kie's storage in parallel.
- * Returns array of hosted URLs.
- */
 async function primeImages(imageUrls: string[]): Promise<string[]> {
     if (!imageUrls.length) return [];
     const results = await Promise.all(
@@ -177,17 +172,15 @@ async function primeImages(imageUrls: string[]): Promise<string[]> {
             try {
                 return await uploadFileByUrl(url);
             } catch (err) {
-                console.warn(`[kie-client] Failed to upload image, using original URL: ${err}`);
-                return url; // fallback to original URL
+                console.warn(`[video-client] Failed to upload image, using original URL: ${err}`);
+                return url;
             }
         }),
     );
     return results;
 }
 
-/** Convenience: prime images + create task + poll until done, return video URL. */
-export async function generateVideo(opts: KieCreateOptions): Promise<string> {
-    // Upload images to Kie's storage for reliable access
+export async function generateVideo(opts: VideoCreateOptions): Promise<string> {
     const primedUrls = await primeImages(opts.imageUrls ?? []);
     const taskId = await createTask({ ...opts, imageUrls: primedUrls });
     return pollTask(taskId);

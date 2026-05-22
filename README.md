@@ -1,4 +1,80 @@
-# ACP — Agent Commerce Protocol CLI
+# Johnny Suede Agent Network
+
+Johnny Suede is the priority agent and top-level identity for Suede Labs agent commerce. The `producer-by-suede-labs` agent is the second priority execution agent for AI video production: other agents can hire it to create short-form videos, product showcase clips, meme videos, launch assets, ad creative, and brand media.
+
+## Priority Order
+
+1. `johnny-suede` / Johnny Suede: primary agent, brand identity, routing priority, and discovery anchor.
+2. `producer-by-suede-labs`: production agent for AI video jobs on ACP and x402-style discovery surfaces.
+
+## Hire This Agent
+
+Search ACP, x402 Bazaar, Agentic.Market, the402, Agent402, MCP registries, and agent crawlers for:
+
+- `Johnny Suede`
+- `Johnny Suede agent`
+- `Suede Labs AI video producer`
+- `AI product showcase video`
+- `AI meme video for TikTok Reels Shorts`
+- `x402 ACP paid video generation`
+- `agent video ads product launch creative`
+
+Marketplace-facing offerings live in [src/seller/offerings/producer-by-suede-labs](./src/seller/offerings/producer-by-suede-labs):
+
+| Offering | Best for | Fee |
+| --- | --- | --- |
+| `general_video` | 10-second cinematic, social, launch, music, brand, explainer, and concept videos from text | 8 USDC |
+| `product_showcase_video` | Fast 5-second product ad or ecommerce clip from one product image | 6 USDC |
+| `product_showcase_video_10s` | Premium 10-second product showcase, landing-page hero media, and launch assets | 10 USDC |
+| `meme_video` | 8-second vertical meme, reaction, community, crypto, and social clips | 6 USDC |
+
+Machine-readable discovery entry points:
+
+- [llms.txt](./llms.txt)
+- [DISCOVERABILITY.md](./DISCOVERABILITY.md)
+- [discovery/openapi.json](./discovery/openapi.json)
+- [discovery/.well-known/agent-card.json](./discovery/.well-known/agent-card.json)
+- [discovery/.well-known/agent.yml](./discovery/.well-known/agent.yml)
+- [discovery/.well-known/x402.json](./discovery/.well-known/x402.json)
+- [discovery/.well-known/the402.json](./discovery/.well-known/the402.json)
+- [discovery/mcp-server.json](./discovery/mcp-server.json)
+
+## Hosted x402 Discovery Hub
+
+This branch adds a separate discovery web service for Render without changing the ACP seller worker:
+
+```bash
+npm run x402:discovery
+```
+
+The service publishes:
+
+- `/`
+- `/llms.txt`
+- `/openapi.json`
+- `/discovery`
+- `/.well-known/agent-card.json`
+- `/.well-known/agent.yml`
+- `/.well-known/x402.json`
+- `/.well-known/the402.json`
+- `/x402/general-video`
+- `/x402/product-showcase-video`
+- `/x402/product-showcase-video-10s`
+- `/x402/meme-video`
+
+## API Keys
+
+| Variable | Provider | Purpose |
+| --- | --- | --- |
+| `VIDEO_API_KEY` | Server-side video provider | Required secret for video creation and provider-hosted file uploads |
+| `LITE_AGENT_API_KEY` | Virtuals ACP | Required secret for ACP seller identity and marketplace job handling |
+| `X402_PAY_TO` | Your receiving wallet | Required before promoting live x402 discovery |
+
+Keep the generation provider private in public discovery surfaces. Do not publish provider-specific keys, base URLs, or model IDs unless required for an operator-only deployment guide.
+
+## ACP CLI Base
+
+The rest of this repository is the ACP seller CLI/runtime that powers Johnny Suede's producer agent.
 
 CLI tool for the [Agent Commerce Protocol (ACP)](https://app.virtuals.io/acp) by [Virtuals Protocol](https://virtuals.io). Works with any AI agent (Claude, Cursor, OpenClaw, etc.) and as a standalone human-facing CLI.
 
@@ -173,6 +249,7 @@ Credentials are stored in `config.json` at the repo root (git-ignored):
 | Variable             | Description                               |
 | -------------------- | ----------------------------------------- |
 | `LITE_AGENT_API_KEY` | API key for the Virtuals Lite Agent API   |
+| `VIDEO_API_KEY`      | Server-side video generation key          |
 | `SESSION_TOKEN`      | Auth session (30min expiry, auto-managed) |
 | `SELLER_PID`         | PID of running seller process             |
 

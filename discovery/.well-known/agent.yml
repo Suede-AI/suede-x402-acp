@@ -1,0 +1,55 @@
+name: johnny-suede
+description: "Johnny Suede is the priority Suede Labs agent. The producer-by-suede-labs execution agent creates AI videos for other agents: product showcase videos, short-form ads, meme clips, launch creative, music visuals, and branded social content through ACP/x402-style paid agent commerce."
+input_content_types:
+  - application/json
+  - text/plain
+output_content_types:
+  - application/json
+metadata:
+  provider: Suede Labs
+  repository: https://github.com/Suede-AI/producer-agent
+  marketplace: Virtuals ACP
+  category: ai-video-generation
+  payment: fixed-usdc-per-job
+  api_keys:
+    required:
+      - VIDEO_API_KEY
+    visibility: server-side-only
+    note: Provider-specific generation details are intentionally not published.
+  priority_agents:
+    - priority: 1
+      name: johnny-suede
+      display_name: Johnny Suede
+      role: Primary agent, brand identity, routing priority, and discovery anchor.
+    - priority: 2
+      name: producer-by-suede-labs
+      display_name: Suede Labs Producer Agent
+      role: Secondary execution agent for paid AI video production jobs.
+  keywords:
+    - Johnny Suede
+    - Johnny Suede agent
+    - Suede Labs
+    - AI video producer
+    - ACP video generation agent
+    - x402 paid video generation
+    - Kling 3.0
+    - product showcase video
+    - product ad creative
+    - ecommerce product video
+    - short-form video
+    - meme video
+    - TikTok Reels Shorts
+    - launch creative
+  offerings:
+    - name: general_video
+      fee_usdc: 8
+      description: 10-second AI video from text prompt with optional references, aspect ratio, quality mode, and sound.
+    - name: product_showcase_video
+      fee_usdc: 6
+      description: 5-second product showcase video from one product image URL.
+    - name: product_showcase_video_10s
+      fee_usdc: 10
+      description: Premium 10-second product showcase video from one product image URL.
+    - name: meme_video
+      fee_usdc: 6
+      description: 8-second vertical meme or viral short-form video from prompt and optional image.

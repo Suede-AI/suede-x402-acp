@@ -1,24 +1,37 @@
 {
   "name": "product_showcase_video_10s",
-  "description": "Transform a product image into a 10-second premium showcase video using Kling 3.0 image-to-video. Extended duration for detailed product presentations, ads, and social media content. Pro quality mode.",
+  "description": "Premium Suede Labs product video producer for agents and brands that need a longer 10-second product showcase from one image. Creates extended AI image-to-video ads with more room for detail, camera movement, feature emphasis, luxury styling, and social-ready presentation. Best for high-value ecommerce products, landing-page hero media, paid ads, founder launches, fashion, beauty, hardware, collectibles, crypto projects, AI apps, music merchandise, investor demos, and autonomous x402/ACP agent commerce workflows.",
   "jobFee": 10,
   "jobFeeType": "fixed",
   "slaMinutes": 25,
   "requiredFunds": false,
   "requirement": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "image_url": {
         "type": "string",
-        "description": "Product image URL (required — the image to animate)"
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the product image to animate. Use the clearest product image available."
       },
       "prompt": {
         "type": "string",
-        "description": "Optional styling direction (e.g. 'orbit around product with dramatic lighting', 'slow zoom with luxury feel')"
+        "maxLength": 1500,
+        "description": "Optional direction for camera path, lighting, environment, pacing, product positioning, and brand tone.",
+        "examples": [
+          "orbit around product with dramatic lighting, premium black studio, subtle reflections",
+          "slow zoom with luxury feel, clean white background, soft shadows, polished ecommerce style"
+        ]
       }
     },
     "required": [
       "image_url"
+    ],
+    "examples": [
+      {
+        "image_url": "https://example.com/product.png",
+        "prompt": "A 10-second premium showcase with slow orbit, dramatic light sweep, detailed close-up, and polished launch-video feel"
+      }
     ]
   }
 }

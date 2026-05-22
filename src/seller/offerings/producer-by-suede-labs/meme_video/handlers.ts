@@ -1,5 +1,5 @@
 import type { ExecuteJobResult, ValidationResult } from "../../../runtime/offeringTypes.js";
-import { generateVideo } from "../../kie-client.js";
+import { generateVideo } from "../../video-client.js";
 
 export async function executeJob(request: any): Promise<ExecuteJobResult> {
   const imageUrls = request.image_url ? [request.image_url] : [];
@@ -18,7 +18,7 @@ export async function executeJob(request: any): Promise<ExecuteJobResult> {
       type: "video",
       videoUrl,
       duration: 8,
-      model: "kling-3.0",
+      model: "server-side-video",
       category: "meme",
     }),
   };

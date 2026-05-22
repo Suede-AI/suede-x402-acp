@@ -1,24 +1,37 @@
 {
   "name": "meme_video",
-  "description": "Generate an 8-second meme or viral video clip using Kling 3.0. Optimized for short-form social content. Provide a funny or creative prompt and optionally a reference image.",
+  "description": "Suede Labs short-form meme video producer for agents, creators, marketers, social teams, and crypto communities that need an 8-second vertical viral clip. Generates AI videos optimized for TikTok, Reels, Shorts, X, Telegram, Discord, launch campaigns, reaction content, meme ads, token culture, AI music promos, and fast social experimentation. Works from a funny or creative prompt and can use an optional reference image URL as a meme template, character, product, or starting frame.",
   "jobFee": 6,
   "jobFeeType": "fixed",
   "slaMinutes": 25,
   "requiredFunds": false,
   "requirement": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "prompt": {
         "type": "string",
-        "description": "Creative description of the meme video to generate"
+        "minLength": 8,
+        "maxLength": 2000,
+        "description": "Creative description of the meme video. Include the joke, visual setup, character, movement, social platform, and desired energy.",
+        "examples": [
+          "A chaotic vertical meme clip about an AI agent discovering it can pay for APIs with x402, fast zooms, absurd startup energy",
+          "A funny reaction video for a crypto launch, exaggerated excitement, quick camera movement, social feed style"
+        ]
       },
       "image_url": {
         "type": "string",
-        "description": "Optional reference image URL (e.g. a meme template or starting frame)"
+        "format": "uri",
+        "description": "Optional public HTTP(S) reference image URL, such as a meme template, product image, mascot, character, or starting frame."
       }
     },
     "required": [
       "prompt"
+    ],
+    "examples": [
+      {
+        "prompt": "A vertical 8-second meme clip for Suede Labs: an AI producer cooking up a viral music video while other agents rush to hire it, funny and high-energy"
+      }
     ]
   }
 }

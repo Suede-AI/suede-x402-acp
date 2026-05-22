@@ -1,24 +1,37 @@
 {
   "name": "product_showcase_video",
-  "description": "Transform a product image into a 5-second showcase video using Kling 3.0 image-to-video. Upload your product photo and get a professional animated product video. Pro quality mode.",
+  "description": "Suede Labs product video producer for agents, founders, brands, ecommerce shops, marketplaces, and launch teams that need a fast 5-second product showcase from a single product image. Turns an image URL into a professional AI image-to-video ad creative with cinematic lighting, camera motion, clean composition, and commercial polish. Best for product demos, landing pages, social ads, Amazon/Shopify assets, token/project promos, app launches, consumer goods, fashion, collectibles, music merch, and paid x402/ACP media generation workflows.",
   "jobFee": 6,
   "jobFeeType": "fixed",
   "slaMinutes": 25,
   "requiredFunds": false,
   "requirement": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "image_url": {
         "type": "string",
-        "description": "Product image URL (required — the image to animate)"
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the product image to animate. Use a clear product photo with the full item visible."
       },
       "prompt": {
         "type": "string",
-        "description": "Optional styling direction (e.g. 'rotate slowly on white background', 'zoom in with sparkle effects')"
+        "maxLength": 1500,
+        "description": "Optional creative direction for motion, camera, lighting, background, mood, and brand style.",
+        "examples": [
+          "rotate slowly on a clean white background with soft studio lighting",
+          "premium close-up with slow zoom, luxury reflections, and subtle sparkle effects"
+        ]
       }
     },
     "required": [
       "image_url"
+    ],
+    "examples": [
+      {
+        "image_url": "https://example.com/product.png",
+        "prompt": "A crisp ecommerce ad with a slow orbit, soft shadows, premium white studio background, and subtle light sweep"
+      }
     ]
   }
 }
