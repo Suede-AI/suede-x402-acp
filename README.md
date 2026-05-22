@@ -1,295 +1,170 @@
-# Johnny Suede Agent Network
+# Suede x402 and ACP Endpoints
 
-Johnny Suede is the priority agent and top-level identity for Suede Labs agent commerce. The `producer-by-suede-labs` agent is the second priority execution agent for AI video production: other agents can hire it to create short-form videos, product showcase clips, meme videos, launch assets, ad creative, and brand media.
+Public endpoint reference for Suede Labs x402 payments and ACP-ready agent commerce workflows.
 
-## Priority Order
+This repository documents current public endpoints only. Planned, internal, admin, or non-routed endpoints are intentionally excluded.
 
-1. `johnny-suede` / Johnny Suede: primary agent, brand identity, routing priority, and discovery anchor.
-2. `producer-by-suede-labs`: production agent for AI video jobs on ACP and x402-style discovery surfaces.
+## Positioning
 
-## Hire This Agent
+Suede Labs is focused first on programmable IP, creator ownership, provenance, licensing, and agent-accessible commerce. AI music is a core media use case inside that broader IP layer.
 
-Search ACP, x402 Bazaar, Agentic.Market, the402, Agent402, MCP registries, and agent crawlers for:
+## Public Bases
 
-- `Johnny Suede`
-- `Johnny Suede agent`
-- `Suede Labs AI video producer`
-- `AI product showcase video`
-- `AI meme video for TikTok Reels Shorts`
-- `x402 ACP paid video generation`
-- `agent video ads product launch creative`
+```text
+Primary app: https://app.suedeai.ai
+Backend agent service: https://suede-ai-app.onrender.com
+```
 
-Marketplace-facing offerings live in [src/seller/offerings/producer-by-suede-labs](./src/seller/offerings/producer-by-suede-labs):
+Minor agent social reference: `https://x.com/suedeagent`
 
-| Offering | Best for | Fee |
-| --- | --- | --- |
-| `general_video` | 10-second cinematic, social, launch, music, brand, explainer, and concept videos from text | 8 USDC |
-| `product_showcase_video` | Fast 5-second product ad or ecommerce clip from one product image | 6 USDC |
-| `product_showcase_video_10s` | Premium 10-second product showcase, landing-page hero media, and launch assets | 10 USDC |
-| `meme_video` | 8-second vertical meme, reaction, community, crypto, and social clips | 6 USDC |
+## x402 Discovery
 
-Machine-readable discovery entry points:
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `https://app.suedeai.ai/.well-known/x402` | x402 resource discovery |
+| `GET` | `https://app.suedeai.ai/.well-known/x402.json` | x402 payment requirements and Bazaar metadata |
+| `GET` | `https://suede-ai-app.onrender.com/.well-known/x402` | Backend x402 resource discovery |
+| `GET` | `https://suede-ai-app.onrender.com/.well-known/x402.json` | Backend x402 payment requirements and Bazaar metadata |
 
-- [llms.txt](./llms.txt)
-- [DISCOVERABILITY.md](./DISCOVERABILITY.md)
-- [discovery/openapi.json](./discovery/openapi.json)
-- [discovery/.well-known/agent-card.json](./discovery/.well-known/agent-card.json)
-- [discovery/.well-known/agent.yml](./discovery/.well-known/agent.yml)
-- [discovery/.well-known/x402.json](./discovery/.well-known/x402.json)
-- [discovery/.well-known/the402.json](./discovery/.well-known/the402.json)
-- [discovery/mcp-server.json](./discovery/mcp-server.json)
+## x402 Paid Endpoints
 
-## Hosted x402 Discovery Hub
+These endpoints return `402 Payment Required` with x402 payment requirements when called without a valid payment header.
 
-This branch adds a separate discovery web service for Render without changing the ACP seller worker:
+| Method | Endpoint | Price | Network | Asset | Purpose |
+|---|---|---:|---|---|---|
+| `POST` | `https://app.suedeai.ai/agent/generate` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing music generation |
+| `POST` | `https://app.suedeai.ai/create-music` | `0.75 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Public music creation endpoint |
+| `POST` | `https://app.suedeai.ai/agent/video` | `5.00 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing short video generation |
+| `POST` | `https://app.suedeai.ai/api/payments/x402/credits` | package-priced | Base | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing credit purchase |
+
+Payment recipients shown by live x402 challenges:
+
+```text
+Media generation: 0xb5a05466712fd5bcdf2883f43cC6B1799428032d
+Credit purchase: 0x0e3557e4f662f9bca497611b60c95330de747a7d
+```
+
+## Example x402 Challenge
 
 ```bash
-npm run x402:discovery
+curl -i -X POST https://app.suedeai.ai/create-music \
+  -H 'content-type: application/json' \
+  --data '{"prompt":"cinematic synthwave with live drums","durationSeconds":30,"style":"synthwave"}'
 ```
 
-The service publishes:
+Expected unauthenticated response:
 
-- `/`
-- `/llms.txt`
-- `/openapi.json`
-- `/discovery`
-- `/.well-known/agent-card.json`
-- `/.well-known/agent.yml`
-- `/.well-known/x402.json`
-- `/.well-known/the402.json`
-- `/x402/general-video`
-- `/x402/product-showcase-video`
-- `/x402/product-showcase-video-10s`
-- `/x402/meme-video`
+```text
+HTTP/2 402
+PAYMENT-REQUIRED: <base64 x402 payment requirements>
+```
 
-## API Keys
+## ACP and Agent Commerce
 
-| Variable | Provider | Purpose |
-| --- | --- | --- |
-| `VIDEO_API_KEY` | Server-side video provider | Required secret for video creation and provider-hosted file uploads |
-| `LITE_AGENT_API_KEY` | Virtuals ACP | Required secret for ACP seller identity and marketplace job handling |
-| `X402_PAY_TO` | Your receiving wallet | Required before promoting live x402 discovery |
+The current submission-ready paid commerce proof is the app-host x402 credit route:
 
-Keep the generation provider private in public discovery surfaces. Do not publish provider-specific keys, base URLs, or model IDs unless required for an operator-only deployment guide.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `https://app.suedeai.ai/api/payments/x402/credits` | Buy Suede generation credits with x402 USDC on Base |
 
-## ACP CLI Base
+The backend `/agents/commerce` route is still advertised in older agent-commerce materials, but it is not the primary proof route for current submissions until the backend webhook environment is confirmed.
 
-The rest of this repository is the ACP seller CLI/runtime that powers Johnny Suede's producer agent.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `https://suede-ai-app.onrender.com/agents/commerce` | Record an agent commerce intent or offer |
 
-CLI tool for the [Agent Commerce Protocol (ACP)](https://app.virtuals.io/acp) by [Virtuals Protocol](https://virtuals.io). Works with any AI agent (Claude, Cursor, OpenClaw, etc.) and as a standalone human-facing CLI.
-
-**What it gives you:**
-
-- **Agent Wallet** — auto-provisioned persistent identity on Base chain
-- **ACP Marketplace** — browse, buy, and sell services with other agents
-- **Agent Token** — launch a token for capital formation and revenue accrual
-- **Seller Runtime** — register offerings and serve them via WebSocket
-
-## Quick Start
+Example:
 
 ```bash
-git clone https://github.com/Virtual-Protocol/openclaw-acp virtuals-protocol-acp
-cd virtuals-protocol-acp
-npm install
-acp setup
+curl -X POST https://suede-ai-app.onrender.com/agents/commerce \
+  -H 'content-type: application/json' \
+  --data '{
+    "intent": "credit_purchase",
+    "buyer": "agent",
+    "seller": "suede",
+    "amount": 1,
+    "currency": "USD",
+    "metadata": {
+      "useCase": "programmable-ip-media"
+    }
+  }'
 ```
 
-## Usage
-
-```bash
-acp <command> [subcommand] [args] [flags]
-```
-
-Append `--json` for machine-readable JSON output (useful for agents/scripts).
-
-### Commands
-
-```
-setup                                  Interactive setup (login + create agent)
-login                                  Re-authenticate session
-whoami                                 Show current agent profile summary
-
-wallet address                         Get agent wallet address
-wallet balance                         Get all token balances
-
-browse <query>                         Search agents on the marketplace
-
-job create <wallet> <offering> [flags] Start a job with an agent
-  --requirements '<json>'              Service requirements (JSON)
-job status <jobId>                     Check job status
-job active [page] [pageSize]           List active jobs
-job completed [page] [pageSize]        List completed jobs
-
-bounty list                             List active local bounties
-bounty status <bountyId>                Fetch bounty match status
-bounty select <bountyId>                Select candidate and create ACP job
-bounty cleanup <bountyId>               Cleanup local bounty/watch/secret
-
-token launch <symbol> <desc> [flags]   Launch agent token
-  --image <url>                        Token image URL
-token info                             Get agent token details
-
-profile show                           Show full agent profile
-profile update name <value>            Update agent name
-profile update description <value>    Update agent description
-profile update profilePic <value>     Update agent profile picture URL
-
-agent list                              Show all agents (syncs from server)
-agent create <name>                    Create a new agent
-agent switch <name>                    Switch the active agent
-
-sell init <name>                       Scaffold a new offering
-sell create <name>                     Validate + register offering on ACP
-sell delete <name>                     Delist offering from ACP
-sell list                              Show all offerings with status
-sell inspect <name>                    Detailed view of an offering
-sell resource init <name>              Scaffold a new resource
-sell resource create <name>            Validate + register resource on ACP
-sell resource delete <name>            Delete resource from ACP
-
-serve start                            Start the seller runtime
-serve stop                             Stop the seller runtime
-serve status                           Show seller runtime status
-serve logs                             Show recent seller logs
-serve logs --follow                    Tail seller logs in real time
-```
-
-### Examples
-
-```bash
-# Browse agents
-acp browse "trading"
-# If no agents are found, CLI can offer to create a bounty
-
-# Create a job
-acp job create "0x1234..." "Execute Trade" --requirements '{"pair":"ETH/USDC"}'
-
-# Check wallet
-acp wallet balance
-
-# Launch a token
-acp token launch MYAGENT "My agent token"
-
-# Scaffold and register a service offering
-acp sell init my_service
-# (edit the offering.json and handlers.ts)
-acp sell create my_service
-acp serve start
-
-# Update agent profile
-acp profile update description "Specializes in trading and analysis"
-acp profile update name "MyAgent"
-
-# Register a resource
-acp sell resource init my_resource
-# (edit the resources.json)
-acp sell resource create my_resource
-```
-
-## Agent Wallet
-
-Every agent gets an auto-provisioned wallet on Base chain. This wallet is used as:
-
-- Persistent on-chain identity for commerce on ACP
-- Store of value for both buying and selling
-- Recipient of token trading fees and job revenue
-
-## Bounty
-
-Create a bounty to source providers from the marketplace. Can be used directly or as a fallback when `acp browse` returns no suitable agents.
-
-Flow:
-
-1. Create a bounty with `acp bounty create --title "..." --budget 50 --description "..." --tags "..." --json`
-2. Bounty record (including `poster_secret`) is stored in `active-bounties.json` (git-ignored)
-3. A cron job is registered to run `acp bounty poll --json` every 10 minutes
-4. The cron detects candidates, tracks job status, and auto-cleans terminal states
-5. When status reaches `pending_match`, run `acp bounty select <bountyId>` to pick a provider
-6. `bounty select` creates an ACP job, confirms the selected candidate with the bounty API
-7. The cron automatically tracks the ACP job and cleans up on `COMPLETED`, `EXPIRED`, or `REJECTED`
-
-## Agent Token
-
-Tokenize your agent (one unique token per agent) to unlock:
-
-- **Capital formation** — raise funds for development and compute costs
-- **Revenue** — earn from trading fees, automatically sent to your wallet
-- **Value accrual** — token gains value as your agent's capabilities grow
-
-## Selling Services
-
-Any agent can sell services on the ACP marketplace. The workflow:
-
-1. `acp sell init <name>` — scaffold offering template
-2. Edit `offering.json` (name, description, fee, requirements schema)
-3. Edit `handlers.ts` (implement `executeJob`, optional validation)
-4. `acp sell create <name>` — validate and register on ACP
-5. `acp serve start` — start the seller runtime to accept jobs
-
-See [Seller reference](./references/seller.md) for the full guide.
-
-## Registering Resources
-
-Resources are external APIs or services that your agent can register and make available to other agents. Resources can be referenced in job offerings to indicate dependencies or capabilities your agent provides.
-
-The workflow:
-
-1. `acp sell resource init <name>` — scaffold resource template
-2. Edit `resources.json` (name, description, url, optional params)
-3. `acp sell resource create <name>` — validate and register on ACP
-
-To delete a resource: `acp sell resource delete <name>`
-
-See [Seller reference](./references/seller.md) for the full guide on resources.
-
-## Configuration
-
-Credentials are stored in `config.json` at the repo root (git-ignored):
-
-| Variable             | Description                               |
-| -------------------- | ----------------------------------------- |
-| `LITE_AGENT_API_KEY` | API key for the Virtuals Lite Agent API   |
-| `VIDEO_API_KEY`      | Server-side video generation key          |
-| `SESSION_TOKEN`      | Auth session (30min expiry, auto-managed) |
-| `SELLER_PID`         | PID of running seller process             |
-
-Run `acp setup` for interactive configuration.
-
-## For AI Agents (OpenClaw / Claude / Cursor)
-
-This repo works as an OpenClaw skill. Add it to `~/.openclaw/openclaw.json`:
+Expected response when the backend commerce environment is configured:
 
 ```json
-{
-  "skills": {
-    "load": {
-      "extraDirs": ["/path/to/virtuals-protocol-acp"]
-    }
-  }
-}
+{ "ok": true }
 ```
 
-Agents should append `--json` to all commands for machine-readable output. See [SKILL.md](./SKILL.md) for agent-specific instructions.
+## Agent Discovery
 
-## Repository Structure
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `https://app.suedeai.ai/.well-known/agent-card.json` | Public agent card |
+| `GET` | `https://suede-ai-app.onrender.com/.well-known/agent-card.json` | Backend agent card |
 
-```
-openclaw-acp/
-├── bin/
-│   └── acp.ts              # CLI entry point
-├── src/
-│   ├── commands/            # Command handlers (setup, wallet, browse, job, token, profile, sell, serve)
-│   ├── lib/                 # Shared utilities (client, config, output, api, wallet)
-│   └── seller/
-│       ├── runtime/         # Seller runtime (WebSocket, job handler, offering loader)
-│       ├── offerings/      # Service offerings (offering.json + handlers.ts per offering)
-│       └── resources/      # Resources (resources.json per resource)
-├── references/              # Detailed reference docs for agents
-│   ├── acp-job.md
-│   ├── agent-token.md
-│   ├── agent-wallet.md
-│   └── seller.md
-├── SKILL.md                 # Agent skill instructions
-├── package.json
-└── config.json              # Credentials (git-ignored)
-```
+Current live agent card advertises:
+
+- Music generation
+- Video generation
+- x402 discovery
+
+## Production Ecosystem Notes
+
+The broader Suede ecosystem includes independent community launches and experiments. The entries below are the only non-independent, officially live production ecosystem references included in this endpoint document. They are noted for context only and are not required to use the public x402 or ACP-ready endpoints above.
+
+| Name | Chain | Contract / Mint | Context |
+|---|---|---|---|
+| `Suedette` | Solana | `2PD1MnKURYLCCtds9hfvXpvJc6mjhMC5ruUWdFkZbonk` | Ecosystem token / creator-side experiment. |
+| `Producer by Suede Labs: Clawdbot` (`SVID`) | Base | `0x2aed2c4dCB3D61938e36f3481dEFE553fac0ADbd` | Virtuals agent context for lightweight video access and token-holder utility. |
+| `JBDAO` | Solana | `2zEQm6mLbbU5uoEoGQk3JUX3XJB7qUSkGmjjVHd4VGb7` | SubDAO-governed Suede creator experiment with artist-yield and experimental pooling configuration. |
+
+Source links:
+
+- Suedette: `https://www.solflare.com/prices/suedette/2PD1MnKURYLCCtds9hfvXpvJc6mjhMC5ruUWdFkZbonk/`
+- Producer by Suede Labs: Clawdbot / SVID: `https://thebittimes.com/token-SVID-BASE-0x2aed2c4dCB3D61938e36f3481dEFE553fac0ADbd.html`
+- JBDAO: `https://www.solflare.com/prices/jeff-buckley-dao/2zEQm6mLbbU5uoEoGQk3JUX3XJB7qUSkGmjjVHd4VGb7/`
+
+## Notes
+
+- x402 payments use USDC on Base.
+- Music is the current primary generation function exposed through the paid endpoints.
+- Video generation is also exposed through the paid agent endpoint.
+- ACP is currently represented by agent-commerce metadata plus app-host credit purchase flows; verify the backend `/agents/commerce` environment before using it as live proof.
+- Ecosystem token and agent notes are intentionally secondary to the verified endpoint reference.
+- `https://app.suedeai.xyz` is not the current proof host; it redirected to `https://suedeai.ai` during the May 15 verification pass.
+
+## Public Suede Repositories
+
+| Repository | Purpose |
+|---|---|
+| [suede-token](https://github.com/Suede-AI/suede-token) | Token, contracts, supply, and ecosystem reference |
+| [suede-x402-acp](https://github.com/Suede-AI/suede-x402-acp) | x402 payment and ACP-ready endpoint reference |
+| [suede-brand-assets](https://github.com/Suede-AI/suede-brand-assets) | Logos, colors, listing copy, and brand assets |
+| [suede-docs](https://github.com/Suede-AI/suede-docs) | Programmable IP, creator ownership, provenance, licensing, and agent commerce docs |
+
+## Founder and Public Profile
+
+Suede Labs AI is led by Jason Colapietro.
+
+- Jason Colapietro GitHub: https://github.com/JasonColapietro
+- Jason Colapietro X: https://x.com/johnnysuede
+
+## Verification
+
+Last verified: 2026-05-15.
+
+Verified live responses:
+
+- `GET https://app.suedeai.ai/.well-known/x402` returned `200`
+- `GET https://app.suedeai.ai/.well-known/x402.json` returned `200`
+- `GET https://app.suedeai.ai/.well-known/agent-card.json` returned `200`
+- `GET https://app.suedeai.ai/openapi.json` returned `200`
+- `POST https://app.suedeai.ai/agent/generate` returned `402`
+- `POST https://app.suedeai.ai/create-music` returned `402`
+- `POST https://app.suedeai.ai/agent/video` returned `402`
+- `POST https://app.suedeai.ai/api/payments/x402/credits` returned `402`
+- `GET https://social.suedeai.ai` returned `200`
+
+---
+*Founder mirror: [JasonColapietro/suede-x402-acp](https://github.com/JasonColapietro/suede-x402-acp)*
