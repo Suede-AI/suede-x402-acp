@@ -1,0 +1,36 @@
+{
+  "name": "ip_attestation_check",
+  "description": "Suede Registry IP attestation lookup for agents, marketplaces, ad networks, content moderation pipelines, sync clearance tools, AI training data auditors, and any workflow that needs to verify whether a given asset hash is registered on the Suede IP Registry on Base. Returns registration status, on-chain attestation transaction hash, registrant wallet address, asset kind (music, video, image, audio), registration timestamp, and any associated license terms. High-frequency, low-latency endpoint suitable for per-request licensing checks, dispute review, ownership disclosure, and paid x402/ACP agent commerce workflows.",
+  "jobFee": 0.1,
+  "jobFeeType": "fixed",
+  "slaMinutes": 1,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "asset_hash": {
+        "type": "string",
+        "pattern": "^(0x)?[0-9a-fA-F]{64}$",
+        "description": "SHA-256 or keccak-256 hex digest of the asset. Accepts 64-char hex with or without 0x prefix."
+      },
+      "include_license": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether to include attached license terms in the response. Adds a small latency cost; leave false for fastest registration-only checks."
+      }
+    },
+    "required": [
+      "asset_hash"
+    ],
+    "examples": [
+      {
+        "asset_hash": "0x3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+      },
+      {
+        "asset_hash": "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+        "include_license": true
+      }
+    ]
+  }
+}
