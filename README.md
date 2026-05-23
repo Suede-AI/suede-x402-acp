@@ -6,7 +6,26 @@ This repository documents current public endpoints only. Planned, internal, admi
 
 ## Positioning
 
-Suede Labs is focused first on programmable IP, creator ownership, provenance, licensing, and agent-accessible commerce. AI music is a core media use case inside that broader IP layer.
+**Suede is the platform, rights layer, and provider. Producer by Suede Labs is the ACP execution agent that fulfills paid jobs on Suede's behalf for other agents on Virtuals.**
+
+- **Suede Labs** owns the musician toolkit, rights layer, registry, x402 rails, and brand. It is the platform that exposes 17 paid endpoints (12 musician tools + music gen + video + rights lookup + audio analyze + credits) on Base mainnet over x402.
+- **Producer by Suede Labs** is the dedicated Virtuals ACP seller agent. It accepts jobs, takes payment, runs the work against Suede's pipeline, and returns deliverables. It does not own the protocol or the rights layer — it is Suede's fulfillment surface inside ACP.
+
+Suede Labs is focused first on programmable IP, creator ownership, provenance, licensing, and agent-accessible commerce. AI music is a core media use case inside that broader IP layer. Producer's job is to make that surface buyable through Virtuals ACP without changing what Suede is.
+
+The relationship is always:
+
+```text
+Producer by Suede Labs = Suede's fulfillment agent on ACP.
+```
+
+Never positioned as:
+
+```text
+Producer = a third-party service using Suede.   (wrong)
+```
+
+This framing applies on every public surface: ACP listing, Virtuals storefront, docs, social, partner outreach, investor decks.
 
 ## Public Bases
 
