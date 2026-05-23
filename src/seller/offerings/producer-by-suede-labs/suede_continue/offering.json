@@ -1,0 +1,56 @@
+{
+  "name": "suede_continue",
+  "description": "Suede Labs track continuation service for agents, producers, songwriters, beatmakers, sync teams, game audio designers, and AI music pipelines that need to generate the next section of an existing track from a specific point. Distinct from extension: continuation lets the caller take a sketch, loop, or unfinished idea and grow it into a longer arrangement with new sections (verse, chorus, bridge, breakdown, outro) instead of merely padding length. Supports demo-to-arrangement workflows, idea-to-song expansion, beat continuation for rappers and topliners, score continuation for media composers, and paid x402/ACP agent commerce workflows. Input is a public audio URL of the seed plus optional prompt and target duration; output is a new audio URL containing the continued track with section markers.",
+  "jobFee": 1.00,
+  "jobFeeType": "fixed",
+  "slaMinutes": 8,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the seed audio to continue. Supports mp3, wav, flac, m4a, and ogg up to 4 minutes long."
+      },
+      "prompt": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Optional steering prompt describing how the continuation should develop (add chorus, introduce vocals, modulate up a step, breakdown then drop, etc.)."
+      },
+      "duration_seconds": {
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 240,
+        "default": 60,
+        "description": "Total duration in seconds to generate after the seed. Must be between 10 and 240 seconds."
+      },
+      "section_hint": {
+        "type": "string",
+        "enum": [
+          "verse",
+          "chorus",
+          "bridge",
+          "breakdown",
+          "drop",
+          "outro",
+          "auto"
+        ],
+        "default": "auto",
+        "description": "Hint for the structural section to generate next. Use auto to let the Suede pipeline choose based on the seed."
+      }
+    },
+    "required": [
+      "audio_url"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/sketch.mp3",
+        "prompt": "Build into a euphoric chorus with layered vocals and big drums.",
+        "duration_seconds": 90,
+        "section_hint": "chorus"
+      }
+    ]
+  }
+}

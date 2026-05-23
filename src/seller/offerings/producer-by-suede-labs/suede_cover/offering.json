@@ -1,0 +1,48 @@
+{
+  "name": "suede_cover",
+  "description": "Suede Labs style cover service for agents, producers, DJs, music supervisors, content creators, brand teams, sync coordinators, and AI music pipelines that need to re-render an existing track in a new genre, era, or production aesthetic while preserving the underlying composition. Supports genre-flip remixes (acoustic to EDM, hip-hop to orchestral, indie to synthwave), era-shift covers (80s, 90s, lo-fi, future bass), brand mood retunes for ad placements, alternate-mix delivery for streaming variants, sync alt-cuts for film and game, and paid x402/ACP agent commerce workflows. Input is either a Suede track_id or public audio URL plus a style prompt describing the target aesthetic; output is a new audio URL of the cover plus detected key, tempo, and style metadata. Powered by the Suede pipeline with composition-preserving style transfer.",
+  "jobFee": 1.00,
+  "jobFeeType": "fixed",
+  "slaMinutes": 8,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "track_id": {
+        "type": "string",
+        "description": "Suede Labs track identifier of a previously generated or registered track. Either track_id or audio_url is required."
+      },
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file to cover. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long. Either track_id or audio_url is required."
+      },
+      "style_prompt": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 500,
+        "description": "Target style or genre description. Examples: 'acoustic folk ballad', '80s synthwave', 'lo-fi hip-hop bedroom mix', 'orchestral cinematic'."
+      },
+      "preserve_vocals": {
+        "type": "boolean",
+        "default": false,
+        "description": "When true, attempts to keep the original vocal performance and re-render only the instrumental bed. When false, regenerates the full arrangement."
+      }
+    },
+    "required": [
+      "style_prompt"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/track.mp3",
+        "style_prompt": "80s synthwave with gated reverb drums and analog pads",
+        "preserve_vocals": true
+      },
+      {
+        "track_id": "suede_trk_01H8XYZ",
+        "style_prompt": "acoustic folk ballad with fingerpicked guitar"
+      }
+    ]
+  }
+}
