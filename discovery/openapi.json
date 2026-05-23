@@ -3,7 +3,7 @@
   "info": {
     "title": "Suede Agent Network",
     "version": "1.0.0",
-    "description": "Agent-readable capability map for the Suede platform and its ACP execution agent. Suede is the platform, rights layer, and provider; Producer by Suede Labs is the dedicated Virtuals ACP seller agent that accepts jobs, takes payment, runs the work against Suede's pipeline, and returns deliverables. Provider-specific implementation details are intentionally not published — agents call Suede surfaces, Producer fulfills."
+    "description": "Agent-readable capability map for the Suede platform and its ACP execution agent. Suede now operates as a three-layer system: (1) the Suede platform exposes 17 paid x402 endpoints on Base mainnet for other autonomous agents; (2) Producer by Suede Labs is the dedicated Virtuals ACP seller agent that accepts jobs, takes payment, runs the work against Suede's pipeline, and returns deliverables; (3) Suede Artist Agent is a hosted per-artist agent built in the artist's likeness, sold to individual artists, managers, and labels — documented in the Suede-AI-App repo. This OpenAPI document covers layer 2. Provider-specific implementation details are intentionally not published — agents call Suede surfaces, Producer fulfills."
   },
   "servers": [
     {
