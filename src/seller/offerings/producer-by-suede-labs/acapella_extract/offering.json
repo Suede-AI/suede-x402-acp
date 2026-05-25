@@ -1,0 +1,44 @@
+{
+  "name": "acapella_extract",
+  "description": "Suede Labs acapella extraction service for remixers, DJs, mashup producers, vocal editors, sample-pack creators, karaoke teams, lyric transcribers, music supervisors, and agents building vocal-centric AI music pipelines. Returns a clean, isolated vocal stem from any source recording, optimized for low bleed and high intelligibility. Distinct from the 2-track or 4-track stems services: this is the dedicated vocals-only delivery with extra post-processing for vocal clarity. Supports acapella mashup production, vocal sampling for new tracks, lyric transcription preprocessing, vocal performance archival, isolated-vocal sync delivery, AI vocal model training data, and paid x402/ACP agent commerce workflows. Input is a public audio URL plus optional output format; output is a single vocal stem URL plus duration and detected key metadata.",
+  "jobFee": 0.50,
+  "jobFeeType": "fixed",
+  "slaMinutes": 6,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+      },
+      "output_format": {
+        "type": "string",
+        "enum": [
+          "wav",
+          "mp3",
+          "flac"
+        ],
+        "default": "wav",
+        "description": "Audio format for the returned acapella. Use wav or flac for production work, mp3 for fast previews."
+      },
+      "denoise": {
+        "type": "boolean",
+        "default": true,
+        "description": "When true, applies additional noise and bleed reduction to the isolated vocal. Set to false to preserve raw extraction artifacts for archival use."
+      }
+    },
+    "required": [
+      "audio_url"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/track.mp3",
+        "output_format": "wav",
+        "denoise": true
+      }
+    ]
+  }
+}

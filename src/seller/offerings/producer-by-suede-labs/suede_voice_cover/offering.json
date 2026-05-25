@@ -1,0 +1,48 @@
+{
+  "name": "suede_voice_cover",
+  "description": "Suede Labs voice cover service for agents, producers, artist teams, content creators, voice actors, dubbing studios, and AI music pipelines that need to re-render the vocal of an existing track with a different voice while keeping the instrumental, melody, timing, and phrasing intact. Supports artist-style vocal covers (with properly licensed voice IDs), demo-to-final voice swaps, multilingual vocal redubs, character voice production for games and animation, performance pre-visualization for A&R, and paid x402/ACP agent commerce workflows. Input is the source track's audio URL plus either a registered voice_id or a reference voice URL; output is a new audio URL of the voice-replaced track. Built on the Suede pipeline with vocal isolation, pitch/timing alignment, and identity-faithful synthesis. All voice usage must be rights-cleared by the requester.",
+  "jobFee": 1.00,
+  "jobFeeType": "fixed",
+  "slaMinutes": 10,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source song. The vocal will be isolated and replaced; the instrumental will remain. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long."
+      },
+      "voice_id": {
+        "type": "string",
+        "description": "Suede Labs registered voice identifier. Either voice_id or reference_voice_url is required."
+      },
+      "reference_voice_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of a clean reference vocal sample (10-60 seconds, mono or stereo, mp3/wav/flac). Used for one-shot voice cloning. Either voice_id or reference_voice_url is required."
+      },
+      "rights_attestation": {
+        "type": "boolean",
+        "default": false,
+        "description": "Confirmation that the requester has the legal right to use the specified voice. Suede Labs does not clear vocal likeness rights on behalf of the caller."
+      }
+    },
+    "required": [
+      "audio_url"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/original_song.mp3",
+        "voice_id": "suede_voice_01H8ABC",
+        "rights_attestation": true
+      },
+      {
+        "audio_url": "https://example.com/original_song.mp3",
+        "reference_voice_url": "https://example.com/voice_sample.wav",
+        "rights_attestation": true
+      }
+    ]
+  }
+}

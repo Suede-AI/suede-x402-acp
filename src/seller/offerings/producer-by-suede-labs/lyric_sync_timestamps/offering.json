@@ -1,0 +1,53 @@
+{
+  "name": "lyric_sync_timestamps",
+  "description": "Suede Labs lyric synchronization service for music publishers, lyric video producers, karaoke platforms, streaming services, sync rights managers, accessibility teams, language learning apps, and agents building lyric-aware AI music pipelines. Takes a song's audio plus its lyrics text and returns word-level and line-level timestamps aligned to the recording. Output is compatible with standard lyric formats (LRC, enhanced LRC, JSON timing array, WebVTT) and ready to drive karaoke playback, synced lyric displays, captioning, search seeking, and AI-driven music interaction. Supports lyric video production, karaoke creation, streaming-platform synced lyric ingestion, accessibility captioning, multilingual learning tools, and paid x402/ACP agent commerce workflows. Input is a public audio URL plus the lyrics text and optional language hint; output is a timestamped lyric document plus duration metadata.",
+  "jobFee": 0.25,
+  "jobFeeType": "fixed",
+  "slaMinutes": 4,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 10 minutes long."
+      },
+      "lyrics": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20000,
+        "description": "Plain-text lyrics for the song, with line breaks preserved. Section labels in brackets like [Verse 1] or [Chorus] are preserved in output."
+      },
+      "language": {
+        "type": "string",
+        "description": "Optional BCP-47 language tag of the lyrics (e.g. 'en', 'es', 'ja', 'pt-BR'). When omitted, language is auto-detected.",
+        "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+      },
+      "format": {
+        "type": "string",
+        "enum": [
+          "lrc",
+          "enhanced_lrc",
+          "json",
+          "vtt"
+        ],
+        "default": "enhanced_lrc",
+        "description": "Output format. enhanced_lrc and json include word-level timing; lrc and vtt are line-level."
+      }
+    },
+    "required": [
+      "audio_url",
+      "lyrics"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/song.mp3",
+        "lyrics": "[Verse 1]\nFirst line of the song\nSecond line of the song\n\n[Chorus]\nHook line one\nHook line two",
+        "language": "en",
+        "format": "enhanced_lrc"
+      }
+    ]
+  }
+}

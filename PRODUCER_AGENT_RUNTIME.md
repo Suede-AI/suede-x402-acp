@@ -74,7 +74,7 @@ Keep the generation provider private in public discovery surfaces. Do not publis
 
 ## ACP CLI Base
 
-The rest of this repository is the ACP seller CLI/runtime that powers Johnny Suede's producer agent.
+The rest of this repository is the ACP seller CLI/runtime that powers **Producer by Suede Labs** — Suede's dedicated ACP execution agent. Suede is the platform, rights layer, and provider; Producer accepts jobs, takes payment, runs the work against Suede's pipeline, and returns deliverables.
 
 CLI tool for the [Agent Commerce Protocol (ACP)](https://app.virtuals.io/acp) by [Virtuals Protocol](https://virtuals.io). Works with any AI agent (Claude, Cursor, OpenClaw, etc.) and as a standalone human-facing CLI.
 

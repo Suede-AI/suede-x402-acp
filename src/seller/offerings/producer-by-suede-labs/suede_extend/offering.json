@@ -1,0 +1,48 @@
+{
+  "name": "suede_extend",
+  "description": "Suede Labs track extension service for agents, producers, DJs, remixers, sync teams, content creators, podcasters, game audio designers, and AI music pipelines that need to add seamless additional duration to an existing music track without re-recording. Supports loop extension for podcasts and streams, sync cue lengthening for film and ad placements, dance edit construction, intro and outro padding, background bed extension for video, and paid x402/ACP agent commerce workflows. Input is either a Suede track_id or a public audio URL plus the additional duration to generate; output is a new audio URL containing the extended track, plus duration and continuity metadata. Built on the Suede pipeline with style-aware continuation so the extension matches the source's key, tempo, instrumentation, and arrangement.",
+  "jobFee": 1.00,
+  "jobFeeType": "fixed",
+  "slaMinutes": 8,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "track_id": {
+        "type": "string",
+        "description": "Suede Labs track identifier of a previously generated or registered track. Either track_id or audio_url is required."
+      },
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file to extend. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long. Either track_id or audio_url is required."
+      },
+      "duration_seconds": {
+        "type": "integer",
+        "minimum": 5,
+        "maximum": 240,
+        "description": "Additional duration in seconds to append to the source track. Must be between 5 and 240 seconds."
+      },
+      "prompt": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Optional steering prompt describing how the extension should evolve (energy build, breakdown, outro fade, key change hint, etc.)."
+      }
+    },
+    "required": [
+      "duration_seconds"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/track.mp3",
+        "duration_seconds": 60,
+        "prompt": "Build energy into a final drop, then fade to outro."
+      },
+      {
+        "track_id": "suede_trk_01H8XYZ",
+        "duration_seconds": 30
+      }
+    ]
+  }
+}

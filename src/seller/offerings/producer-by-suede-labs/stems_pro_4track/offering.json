@@ -1,0 +1,48 @@
+{
+  "name": "stems_pro_4track",
+  "description": "Suede Labs professional 4-track stems separation service for producers, mixing and mastering engineers, remixers, DJs, sync teams, ML training pipelines, music supervisors, sample-pack creators, and agents building advanced audio workflows. Returns four clean, high-fidelity stems suitable for production work: vocals, drums, bass, and melody/other. Distinct from the basic 2-track service: this is the studio-grade split with full stem fidelity, lower bleed, and production-ready file delivery. Supports remix and mashup production, isolated-element sync clearance, surgical mixing rescue, sample mining, karaoke and instrumental delivery, ML training data preparation, and paid x402/ACP agent commerce workflows. Input is a public audio URL plus optional output format; output is a set of four stem URLs plus duration and detected key/tempo metadata.",
+  "jobFee": 1.00,
+  "jobFeeType": "fixed",
+  "slaMinutes": 10,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file to separate. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+      },
+      "output_format": {
+        "type": "string",
+        "enum": [
+          "wav",
+          "mp3",
+          "flac"
+        ],
+        "default": "wav",
+        "description": "Audio format for the returned stems. Use wav or flac for production work, mp3 for fast previews."
+      },
+      "sample_rate": {
+        "type": "integer",
+        "enum": [
+          44100,
+          48000
+        ],
+        "default": 44100,
+        "description": "Sample rate of the returned stems. Use 48000 for video post-production deliverables."
+      }
+    },
+    "required": [
+      "audio_url"
+    ],
+    "examples": [
+      {
+        "audio_url": "https://example.com/track.wav",
+        "output_format": "wav",
+        "sample_rate": 48000
+      }
+    ]
+  }
+}
