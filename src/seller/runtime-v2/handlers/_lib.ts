@@ -127,6 +127,38 @@ export function optionalIntegerInRange(
   return v;
 }
 
+/**
+ * Heuristic check: does this string look like something `resolveAcpProfile`
+ * can handle (URL, UUID, or EVM wallet)? Used by handlers in Category 1/2
+ * that accept EITHER an ACP identifier or free-text — if the input is plainly
+ * text, we skip the network round-trip.
+ *
+ * Mirrors the loose-shape acceptors in acp-resolver.ts:
+ *   - http(s)://...virtuals.io/...      → URL shape
+ *   - http(s)://... (any host)         → URL shape (resolver will reject if
+ *                                         not a Virtuals URL, but it's still
+ *                                         worth a resolver call so the
+ *                                         deliverable surfaces the failure)
+ *   - 0x + 40 hex chars                 → EVM wallet
+ *   - 8-4-4-4-12 hex                   → UUID
+ *
+ * Anything else (e.g. "I sell music covers", "audit my agent please") is
+ * treated as free-text and the handler should skip resolution.
+ */
+export function looksLikeAcpIdentifier(value: string): boolean {
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return true;
+  if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) return true;
+  if (
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      trimmed,
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 /** Optional boolean passthrough. Throws if present but wrong type. */
 export function optionalBoolean(
   req: Record<string, unknown>,

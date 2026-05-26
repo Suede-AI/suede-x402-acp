@@ -2,13 +2,30 @@
  * v2 handler: acp_offer_optimization ($39, 45min)
  *
  * Required fields: agent_or_business, what_you_sell.
- * Optional: current_offerings (array of strings), target_buyer_agent.
+ * Optional: current_offerings (array of strings), target_buyer_agent,
+ *           agent_url_for_context (OPTIONAL ACP identifier — URL, UUID, or
+ *           wallet — used to ground recommendations against the agent's real
+ *           profile).
  * Deliverable: rewritten ACP profile copy + 3-7 buyable job offerings with
  * prices, SLAs, requirement schemas, deliverables, keywords, rationale.
+ *
+ * ACP enrichment:
+ *   - When `agent_url_for_context` is provided and looks like a URL / UUID /
+ *     wallet, we resolve the structured profile and pass it to the prompt as
+ *     "TARGET'S CURRENT ACP STATE" so the LLM avoids duplicating existing
+ *     offerings and fixes weak ones before proposing brand-new offerings.
+ *   - The required input schema is UNCHANGED — `agent_url_for_context` is
+ *     purely additive. Resolution failures degrade gracefully.
  */
 import { register } from "../dispatch.js";
 import { runConsultingAnalysis } from "../clients/consulting-client.js";
-import { requireString, optionalString, optionalStringArray } from "./_lib.js";
+import { resolveAcpProfile } from "../clients/acp-resolver.js";
+import {
+  looksLikeAcpIdentifier,
+  optionalString,
+  optionalStringArray,
+  requireString,
+} from "./_lib.js";
 
 const SERVICE = "acp_offer_optimization";
 
@@ -17,19 +34,46 @@ export async function handle(req: Record<string, unknown>): Promise<string> {
   const what_you_sell = requireString(req, "what_you_sell");
   const current_offerings = optionalStringArray(req, "current_offerings");
   const target_buyer_agent = optionalString(req, "target_buyer_agent");
+  const agent_url_for_context = optionalString(req, "agent_url_for_context");
 
-  const content = await runConsultingAnalysis(SERVICE, {
+  // Resolve the optional context identifier (when supplied + URL-shaped).
+  // Failures degrade to "resolution_failed" — the handler still proceeds.
+  let acpContext: "resolved" | "not_provided" | "resolution_failed" =
+    "not_provided";
+  let resolvedProfile:
+    | { agent: unknown; offerings: unknown; resources: unknown; chains: unknown }
+    | undefined;
+
+  if (agent_url_for_context && looksLikeAcpIdentifier(agent_url_for_context)) {
+    const resolution = await resolveAcpProfile(agent_url_for_context);
+    if (resolution.resolved) {
+      const { agent, offerings, resources, chains } = resolution;
+      resolvedProfile = { agent, offerings, resources, chains };
+      acpContext = "resolved";
+    } else {
+      acpContext = "resolution_failed";
+    }
+  } else if (agent_url_for_context) {
+    // Was provided but didn't pass the identifier shape check.
+    acpContext = "resolution_failed";
+  }
+
+  const promptInput: Record<string, unknown> = {
     agent_or_business,
     what_you_sell,
     ...(current_offerings ? { current_offerings } : {}),
     ...(target_buyer_agent ? { target_buyer_agent } : {}),
-  });
+    ...(resolvedProfile ? { profile: resolvedProfile } : {}),
+  };
+
+  const content = await runConsultingAnalysis(SERVICE, promptInput);
 
   return JSON.stringify({
     type: "markdown",
     service: SERVICE,
     content,
     schemaVersion: "v2-consulting-1",
+    acpContext,
   });
 }
 

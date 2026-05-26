@@ -3,8 +3,17 @@
  *
  * Required fields: business_or_project, what_you_sell.
  * Optional: current_links (array of strings), owner_context.
- * Deliverable: end-to-end ACP setup package (positioning, offering lineup,
- * pricing strategy, copy pack, infra checklist, day 1-7 plan).
+ * Deliverable: end-to-end ACP setup package — agent positioning, public
+ * description, 3-7 job offerings (pricing + SLAs + requirement schemas +
+ * deliverables), resources, keywords, launch checklist, day 1-7 plan.
+ *
+ * Category 3: NOT APPLICABLE for ACP resolver enrichment. This offering is
+ * for NEW agents that do NOT yet exist on ACP — the whole point is to set
+ * them up from scratch, so there is no existing on-chain profile to resolve.
+ * Resolver logic is intentionally NOT wired here. The prompt is framed
+ * against the same 7-dimension ACP rubric as agent_quick_score, but as a
+ * TARGET POSITION the builder should land on after executing the setup, not
+ * a current grade.
  */
 import { register } from "../dispatch.js";
 import { runConsultingAnalysis } from "../clients/consulting-client.js";

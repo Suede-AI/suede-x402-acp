@@ -1,9 +1,10 @@
 /**
- * Tests for the acp_buyer_growth_list v2 handler.
+ * Tests for the acp_buyer_growth_list v2 handler (Category 2: ENRICH).
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const runConsultingAnalysis = vi.fn();
+const resolveAcpProfile = vi.fn();
 
 vi.mock("../clients/consulting-client.js", () => ({
   runConsultingAnalysis,
@@ -11,11 +12,34 @@ vi.mock("../clients/consulting-client.js", () => ({
   listConsultingServices: vi.fn(() => []),
 }));
 
+vi.mock("../clients/acp-resolver.js", () => ({
+  resolveAcpProfile,
+}));
+
 const { handle } = await import("./acp_buyer_growth_list.js");
 const { getHandler } = await import("../dispatch.js");
 
+const PROFILE_FIXTURE = {
+  resolved: true as const,
+  agent: {
+    id: "019e3991-374d-75f3-a6b8-17ff309b4cd2",
+    name: "Producer",
+    walletEvm: "0xabc",
+    walletSol: null,
+    consoleEnabled: false,
+    createdAt: "2026-05-18T05:31:18.728Z",
+    lastActiveAt: null,
+    isHidden: false,
+    builderCode: null,
+  },
+  offerings: [],
+  resources: [],
+  chains: [],
+};
+
 beforeEach(() => {
   runConsultingAnalysis.mockReset();
+  resolveAcpProfile.mockReset();
 });
 
 afterEach(() => {
@@ -39,7 +63,7 @@ describe("acp_buyer_growth_list handler", () => {
     );
   });
 
-  it("forwards optional fields and returns a v2 envelope", async () => {
+  it("forwards optional fields and returns a v2 envelope; acpContext=not_provided", async () => {
     runConsultingAnalysis.mockResolvedValueOnce("# prospects");
 
     const out = await handle({
@@ -49,6 +73,7 @@ describe("acp_buyer_growth_list handler", () => {
       exclusions: "memecoin agents, NSFW",
     });
 
+    expect(resolveAcpProfile).not.toHaveBeenCalled();
     expect(runConsultingAnalysis).toHaveBeenCalledWith(
       "acp_buyer_growth_list",
       {
@@ -65,7 +90,62 @@ describe("acp_buyer_growth_list handler", () => {
       service: "acp_buyer_growth_list",
       content: "# prospects",
       schemaVersion: "v2-consulting-1",
+      acpContext: "not_provided",
     });
+  });
+
+  it("resolves agent_url_for_context and forwards profile; acpContext=resolved", async () => {
+    resolveAcpProfile.mockResolvedValueOnce(PROFILE_FIXTURE);
+    runConsultingAnalysis.mockResolvedValueOnce("# prospects");
+
+    const out = await handle({
+      acp_offer: "audit",
+      target_buyer: "agents",
+      agent_url_for_context:
+        "https://app.virtuals.io/acp/agents/019e3991-374d-75f3-a6b8-17ff309b4cd2",
+    });
+
+    expect(resolveAcpProfile).toHaveBeenCalledTimes(1);
+    const [, payload] = runConsultingAnalysis.mock.calls[0] as unknown as [
+      string,
+      Record<string, unknown>,
+    ];
+    expect(payload).toHaveProperty("profile");
+    const envelope = JSON.parse(out);
+    expect(envelope.acpContext).toBe("resolved");
+  });
+
+  it("marks acpContext=resolution_failed when resolver returns unresolved", async () => {
+    resolveAcpProfile.mockResolvedValueOnce({
+      resolved: false,
+      reason: "not found",
+      inputType: "uuid",
+    });
+    runConsultingAnalysis.mockResolvedValueOnce("# prospects");
+
+    const out = await handle({
+      acp_offer: "x",
+      target_buyer: "y",
+      agent_url_for_context: "https://example.com",
+    });
+
+    expect(resolveAcpProfile).toHaveBeenCalled();
+    const envelope = JSON.parse(out);
+    expect(envelope.acpContext).toBe("resolution_failed");
+  });
+
+  it("does NOT call resolver when context is plain free-text", async () => {
+    runConsultingAnalysis.mockResolvedValueOnce("# prospects");
+
+    const out = await handle({
+      acp_offer: "x",
+      target_buyer: "y",
+      agent_url_for_context: "anonymous agent",
+    });
+
+    expect(resolveAcpProfile).not.toHaveBeenCalled();
+    const envelope = JSON.parse(out);
+    expect(envelope.acpContext).toBe("resolution_failed");
   });
 
   it("omits empty optional fields", async () => {
@@ -81,5 +161,6 @@ describe("acp_buyer_growth_list handler", () => {
     const call = runConsultingAnalysis.mock.calls[0]?.[1] as Record<string, unknown>;
     expect(call).not.toHaveProperty("market_or_platform");
     expect(call).not.toHaveProperty("exclusions");
+    expect(call).not.toHaveProperty("profile");
   });
 });

@@ -1,9 +1,16 @@
 /**
- * Tests for the acp_agent_setup v2 handler.
+ * Tests for the acp_agent_setup v2 handler (Category 3: NOT APPLICABLE).
+ *
+ * This handler is for NEW agents that do not yet exist on ACP — there is no
+ * existing on-chain profile to resolve. We assert that the resolver mock is
+ * NEVER called regardless of input, and that the deliverable envelope does
+ * NOT carry a `scoringMethod` / `acpContext` field (these are for the
+ * Category 1/2 handlers).
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const runConsultingAnalysis = vi.fn();
+const resolveAcpProfile = vi.fn();
 
 vi.mock("../clients/consulting-client.js", () => ({
   runConsultingAnalysis,
@@ -11,11 +18,16 @@ vi.mock("../clients/consulting-client.js", () => ({
   listConsultingServices: vi.fn(() => []),
 }));
 
+vi.mock("../clients/acp-resolver.js", () => ({
+  resolveAcpProfile,
+}));
+
 const { handle } = await import("./acp_agent_setup.js");
 const { getHandler } = await import("../dispatch.js");
 
 beforeEach(() => {
   runConsultingAnalysis.mockReset();
+  resolveAcpProfile.mockReset();
 });
 
 afterEach(() => {
@@ -63,6 +75,25 @@ describe("acp_agent_setup handler", () => {
       content: "# setup guide",
       schemaVersion: "v2-consulting-1",
     });
+    // Category 3: no resolver fields ever surface.
+    expect(envelope.scoringMethod).toBeUndefined();
+    expect(envelope.acpContext).toBeUndefined();
+    expect(envelope.profileId).toBeUndefined();
+  });
+
+  it("NEVER calls the ACP resolver — Category 3 offering", async () => {
+    runConsultingAnalysis.mockResolvedValueOnce("# setup");
+
+    await handle({
+      business_or_project: "x",
+      what_you_sell: "y",
+      // even if the buyer pastes a URL into a free-text field, we don't try
+      // to resolve it — Category 3 has no on-chain profile to enrich.
+      current_links: ["https://app.virtuals.io/acp/agents/abc"],
+      owner_context: "https://example.com/founder",
+    });
+
+    expect(resolveAcpProfile).not.toHaveBeenCalled();
   });
 
   it("omits empty optional fields", async () => {
