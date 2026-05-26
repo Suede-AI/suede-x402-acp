@@ -176,11 +176,40 @@ const JOB_OVERRIDES: Record<
   string,
   { description?: string; deliverable?: string }
 > = {
+  // Category 1 — AUDIT (requires resolver if URL/UUID provided)
   agent_quick_score: {
     description:
       "Instant ACP profile score for any Virtuals agent. Suede fetches the agent's structured ACP data (offerings, resources, chains, on-chain settlement) via api.acp.virtuals.io and grades it across seven ACP-side dimensions only: discoverability, offer quality, pricing signal, trust/proof, x402/stablecoin, ACP compatibility, market opportunity. Returns a 0-100 Performance Index plus verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Brand and web surface explicitly NOT scored.",
     deliverable:
       "Performance Index (0-100), seven ACP-side sub-scores, verdict band, single-line headline, top blocker, single recommended next move. Scoring method: ACP profile data only (no brand-surface crawling).",
+  },
+  acp_performance_audit: {
+    description:
+      "Audit an existing Virtuals agent's ACP performance. When you provide a URL, UUID, or wallet in acp_profile_or_offer, Suede resolves your structured ACP profile via api.acp.virtuals.io and grades the seven ACP-side dimensions: discoverability, offer quality, pricing signal, trust/proof, x402/stablecoin, ACP compatibility, market opportunity. Free-text inputs run in text-only mode. Returns Performance Index, verdict band, ranked blockers, revenue actions. Brand and web surface NOT scored.",
+    deliverable:
+      "Performance Index (0-100), seven ACP-side sub-scores, verdict band, ranked top blockers, optimized positioning, job/pricing fixes, schema fixes, prioritized revenue actions. Scoring method: acp-profile-only when URL is resolved; text-only with note otherwise.",
+  },
+  // Category 2 — ENRICH (optional agent_url_for_context grounds output in real ACP data)
+  acp_offer_optimization: {
+    description:
+      "Rewrite and package ACP jobs so buyer agents can discover, understand, buy, evaluate, and reuse them. Optional agent_url_for_context: when provided, Suede resolves your real ACP offerings via api.acp.virtuals.io and avoids proposing duplicates — existing weak offerings are fixed first before new ones are added. Output: optimized ACP profile copy + 3-7 buyable jobs with prices, SLAs, requirement schemas, deliverables, resources, and keywords anchored to your real catalog.",
+  },
+  acp_x402_promotion_plan: {
+    description:
+      "Build a 14-day distribution plan for an ACP/x402 seller across Virtuals discovery, x402 directories, Stripe Agentic Commerce, founder/operator outreach, traditional media, and creator platforms. Optional agent_url_for_context: when provided, the plan is aligned to your real offering categories and price tiers via api.acp.virtuals.io — no hallucinated positioning. Output: sequenced posts with targets, copy, asset checklist, and channel-specific recommendations.",
+  },
+  acp_market_arbitrage_report: {
+    description:
+      "Find under-priced, under-served agentic-commerce categories that match your offer. Suede analyzes Virtuals listings, x402 directories, and buyer-agent demand patterns. Optional agent_url_for_context: when provided, your existing offering categories are EXCLUDED from the candidate map via api.acp.virtuals.io — no recommending markets you already occupy. Output: 5-8 ranked candidates with saturation, current pricing, recommended price, recommended positioning, and one-line job copy.",
+  },
+  acp_buyer_growth_list: {
+    description:
+      "Find 10 qualified buyer agents, partners, or communities that can grow ACP revenue. Optional agent_url_for_context: when provided, every outreach line is anchored to your real offering names via api.acp.virtuals.io — no generic pitches. Output: 10 prospects with URL, fit reason, purchase/partnership angle, contact path, outreach line, and priority ranking. Best for sellers who want a target list ready to action this week.",
+  },
+  // Category 3 — NOT APPLICABLE (for NEW agents that don't yet exist on ACP)
+  acp_agent_setup: {
+    description:
+      "Set up or package a business, creator, app, token, or service for Virtuals ACP. For NEW agents (not yet on ACP) — Suede turns a non-agent business or rough idea into an ACP-ready profile with positioning, jobs, pricing, schemas, resources, and launch checklist. Output is framed as your TARGET POSITION across seven ACP-side dimensions: discoverability, offer quality, pricing signal, trust/proof, x402/stablecoin, ACP compatibility, market opportunity.",
   },
 };
 

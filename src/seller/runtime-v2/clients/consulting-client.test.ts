@@ -171,4 +171,32 @@ describe("runConsultingAnalysis", () => {
     });
     expect(result).toBe("hello");
   });
+
+  it("truncates buyer-input fields longer than 500 chars but preserves handler-resolved 'profile'", async () => {
+    process.env.VIRTUALS_V2_COMPUTE_API_KEY = "test-key";
+
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: "ok" } }] }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const longBuyerString = "A".repeat(2000);
+    const largeProfile = { agent: { description: "B".repeat(40000) } };
+
+    await runConsultingAnalysis("agent_quick_score", {
+      what_you_sell: longBuyerString,
+      profile: largeProfile,
+    });
+
+    const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const userMessage = (JSON.parse(init.body as string).messages[1].content) as string;
+
+    expect(userMessage).toContain("[truncated]");
+    expect(userMessage).not.toContain("A".repeat(800));
+    expect(userMessage).toContain("B".repeat(800));
+    expect(userMessage).toContain('"description":"' + "B".repeat(40000) + '"');
+  });
 });
