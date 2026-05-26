@@ -218,6 +218,15 @@ function requireEnv(value: string, name: string): string {
 }
 
 /**
+ * Throws if OPENAI_API_KEY is missing. Called by the seller runtime at
+ * startup to refuse to register consulting offerings before they can
+ * accept payment they can't fulfil.
+ */
+export function assertReady(): void {
+  requireEnv(OPENAI_API_KEY, "OPENAI_API_KEY");
+}
+
+/**
  * Run a consulting analysis. Selects the prompt template for `serviceType`,
  * substitutes the buyer's `request` payload, calls OpenAI, and returns the
  * markdown deliverable.

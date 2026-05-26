@@ -185,3 +185,17 @@ export async function generateVideo(opts: VideoCreateOptions): Promise<string> {
     const taskId = await createTask({ ...opts, imageUrls: primedUrls });
     return pollTask(taskId);
 }
+
+/**
+ * Throws if any env var the video client needs at job-time is missing.
+ * Called by the seller runtime at startup to refuse to register video
+ * offerings before they can accept payment they can't fulfil. Mirrors the
+ * `requireEnv` checks inside createTask/pollTask/uploadFileByUrl but runs
+ * once at boot instead of per-job.
+ */
+export function assertReady(): void {
+    requireEnv(VIDEO_API_KEY, "VIDEO_API_KEY");
+    requireEnv(VIDEO_API_BASE, "VIDEO_API_BASE_URL");
+    requireEnv(VIDEO_MODEL, "VIDEO_MODEL");
+    requireEnv(VIDEO_UPLOAD_BASE, "VIDEO_UPLOAD_BASE_URL");
+}

@@ -8,10 +8,16 @@
 // =============================================================================
 
 import { connectAcpSocket } from "./acpSocket.js";
-import { acceptOrRejectJob, requestPayment, deliverJob } from "./sellerApi.js";
+import {
+  acceptOrRejectJob,
+  requestPayment,
+  deliverJob,
+  deliverJobFailure,
+} from "./sellerApi.js";
 import { loadOffering, listOfferings } from "./offerings.js";
 import { AcpJobPhase, type AcpJobEventData } from "./types.js";
 import type { ExecuteJobResult } from "./offeringTypes.js";
+import { assertOfferingReady } from "./clientReadiness.js";
 import { getMyAgentInfo } from "../../lib/wallet.js";
 import {
   checkForExistingProcess,
@@ -124,6 +130,21 @@ async function handleNewTask(data: AcpJobEventData): Promise<void> {
       return;
     }
 
+    // Refuse jobs for offerings whose required env vars are unset — this
+    // prevents the seller from collecting payment for an offering that
+    // will then throw at executeJob time.
+    const readiness = assertOfferingReady(offeringName);
+    if (!readiness.ready) {
+      console.warn(
+        `[seller] Rejecting job ${jobId} for "${offeringName}" — not ready: ${readiness.reason}`
+      );
+      await acceptOrRejectJob(jobId, {
+        accept: false,
+        reason: `Offering temporarily unavailable: ${readiness.reason}`,
+      });
+      return;
+    }
+
     try {
       const { config, handlers } = await loadOffering(offeringName, agentDirName);
 
@@ -204,7 +225,22 @@ async function handleNewTask(data: AcpJobEventData): Promise<void> {
         });
         console.log(`[seller] Job ${jobId} — delivered.`);
       } catch (err) {
+        // The buyer has already paid by the time we reach TRANSACTION.
+        // Logging-only here leaves the job hanging until EXPIRED and the
+        // buyer has no signal that the seller couldn't fulfil. Deliver a
+        // structured error payload through the standard /deliverable
+        // endpoint so the evaluator can reject in EVALUATION and trigger
+        // refund per ACP convention.
+        const reason = err instanceof Error ? err.message : String(err);
         console.error(`[seller] Error delivering job ${jobId}:`, err);
+        try {
+          await deliverJobFailure(jobId, reason);
+        } catch (deliverErr) {
+          console.error(
+            `[seller] Failed to deliver failure notice for job ${jobId}:`,
+            deliverErr
+          );
+        }
       }
     } else {
       console.log(
@@ -240,11 +276,29 @@ async function main() {
     process.exit(1);
   }
 
-  const offerings = listOfferings(agentDirName);
+  const allOfferings = listOfferings(agentDirName);
+  const ready: string[] = [];
+  const skipped: { name: string; reason: string }[] = [];
+  for (const name of allOfferings) {
+    const check = assertOfferingReady(name);
+    if (check.ready) ready.push(name);
+    else skipped.push({ name, reason: check.reason });
+  }
   console.log(
-    `[seller] Available offerings: ${offerings.length > 0 ? offerings.join(", ") : "(none)"
-    }`
+    `[seller] Active offerings: ${ready.length > 0 ? ready.join(", ") : "(none)"}`
   );
+  if (skipped.length > 0) {
+    console.warn(
+      `[seller] Skipped ${skipped.length} offering(s) — required env missing:`
+    );
+    for (const s of skipped) {
+      console.warn(`  - ${s.name}: ${s.reason}`);
+    }
+    console.warn(
+      `[seller] Jobs targeting skipped offerings will be auto-rejected; ` +
+        `set the missing env and restart to enable them.`
+    );
+  }
 
   connectAcpSocket({
     acpUrl: ACP_URL,

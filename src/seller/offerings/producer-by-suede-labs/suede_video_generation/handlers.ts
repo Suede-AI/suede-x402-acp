@@ -1,20 +1,23 @@
 import type { ExecuteJobResult, ValidationResult } from "../../../runtime/offeringTypes.js";
-import { generateVideo } from "../../music-client.js";
+import { generateVideo } from "../../video-client.js";
 
 export async function executeJob(request: any): Promise<ExecuteJobResult> {
-  const result = await generateVideo({
+  // The Suede-native fast tier shares the kie.ai gateway with the other
+  // four video offerings. The video-client adapter takes `duration`
+  // (number of seconds) and ignores `resolution`/`seed` — the gateway
+  // selects resolution from the chosen model. Map the request fields
+  // through without leaking the dropped knobs.
+  const videoUrl = await generateVideo({
     prompt: request.prompt,
-    durationSeconds: request.durationSeconds,
+    duration: request.durationSeconds,
     aspectRatio: request.aspectRatio,
-    resolution: request.resolution,
-    seed: request.seed,
   });
 
   return {
     deliverable: JSON.stringify({
       type: "video",
       kind: "suede_native",
-      result,
+      videoUrl,
     }),
   };
 }
