@@ -109,25 +109,55 @@ function formatContext(request: Record<string, unknown>): string {
 const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
   agent_quick_score: {
     system:
-      "You are a senior analyst at Suede Labs reviewing Virtuals Protocol agents. " +
-      "You produce concise, evidence-anchored scorecards. No marketing fluff, no hype, no emojis. " +
-      "Score conservatively. Cite observable signals only.",
-    user: (req) => `Produce a 1-page rapid scorecard for the following Virtuals agent.
+      "You are a senior analyst at Suede Labs scoring an agent's Virtuals ACP profile. " +
+      "You score ONLY based on the structured ACP profile JSON provided. " +
+      "You DO NOT score brand, website, social media, off-platform presence, or anything " +
+      "that is not in the ACP profile JSON. If the structured profile is sparse or shows " +
+      "few offerings, that means LOW scores — do not soften. Cite observable ACP fields " +
+      "only. No marketing fluff, no hype, no emojis.",
+    user: (req) => `Produce an ACP-only rapid scorecard for the Virtuals agent below.
 
-Inputs:
+You are grading the agent's Virtuals ACP setup. Use ONLY the fields in the
+structured profile JSON. Do NOT crawl, infer, or score the agent's external
+brand, website, social media, or off-platform presence. If a field is missing
+from the JSON, treat that field as ABSENT (which is a LOW signal, not a
+neutral one).
+
+Structured ACP profile:
 ${formatContext(req)}
 
-Deliver markdown with these sections:
-1. Snapshot — agent name, declared purpose, target buyers, one-line verdict.
-2. Performance Index — single integer 0-100 representing overall readiness.
-3. Seven Sub-Scores — table rating Discoverability, Positioning, Offering Quality, Pricing, Fulfillment Readiness, Traction, On-Chain Footprint on 1-10 with one-sentence rationale each.
-4. Verdict Band — one of REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%.
-5. Headline — single declarative sentence summarising the result.
-6. Top Blocker — the single highest-impact issue.
-7. Recommended Next Move — the single highest-leverage change.
+Apply the 7-dimension ACP rubric. For each dimension, score 0-100 against the
+anchors below. Then average the seven scores into the Performance Index.
 
-Keep total length under 500 words.`,
-    maxTokens: 1500,
+| Dimension | What to grade | Anchors |
+|---|---|---|
+| DISCOVERABILITY | agent.isHidden, agent.description length, resources count, builderCode present | 100 if not hidden + 4+ resources + non-trivial description; 50 if listed but sparse; 0 if hidden |
+| OFFER QUALITY | offerings count, description specificity, deliverable specificity, requirementSchema completeness | 100 if 5+ offerings each with deliverable + non-trivial required[] fields; 50 with some quality issues; 0 if 0-1 offerings |
+| PRICING SIGNAL | offering priceUsd range, tiered low/mid/high coverage, requiredFunds appropriate | 100 if prices set + tiered (some <$1, some $1-20, some $20+); 50 if priced but flat; 0 if no prices or all identical |
+| TRUST / PROOF | createdAt age, lastActiveAt recency (proxy: no settlement data available in profile) | 100 if active in last 7 days AND created >30 days ago; 50 if recent but young; 0 if no activity or never active |
+| X402 / STABLECOIN | chains[]: Base (chainId 8453) presence, USDC tokenAddress, active=true, builderCode for attribution | 100 if Base chain active + USDC tokenAddress + builderCode; 50 if Base but missing builderCode; 0 if no Base chain |
+| ACP COMPATIBILITY | cluster set, consoleEnabled OR an active chain row, v2-shaped agent | 100 if cluster set AND at least one active chain; 50 if just one signal; 0 if v1-style/empty |
+| MARKET OPPORTUNITY | distinct offering categories (music / video / consulting / ip-oracle / etc.), resources covering multiple use cases | 100 if 3+ distinct offering categories; 50 if 2; 25 if 1; 0 if none |
+
+Verdict bands (apply to the averaged Performance Index):
+- 0-15: REPLACEABLE
+- 16-30: EXPOSED
+- 31-55: ENTERING
+- 56-80: POSITIONED
+- 81-100: TOP 0.1%
+
+Deliver markdown with these sections:
+1. Snapshot — agent.name, declared purpose (one line from agent.description), one-line verdict.
+2. Performance Index — single integer 0-100 (mean of the seven sub-scores).
+3. Seven Sub-Scores — table with columns: Dimension | Score (0-100) | Evidence (one sentence citing specific ACP fields).
+4. Verdict Band — one of REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%.
+5. Headline — single declarative sentence summarising the ACP-only result.
+6. Top Blocker — the single highest-impact ACP gap (cite the missing/weak field).
+7. Recommended Next Move — the single highest-leverage ACP change.
+
+Keep total length under 600 words. If the profile is missing fields, mark them
+"absent" in the Evidence column rather than inventing data.`,
+    maxTokens: 1800,
   },
 
   acp_performance_audit: {
