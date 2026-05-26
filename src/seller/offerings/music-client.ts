@@ -49,6 +49,15 @@ function requireApiKey(): string {
   return SUEDE_API_KEY;
 }
 
+/**
+ * Throws if SUEDE_API_KEY is missing. Called by the seller runtime at
+ * startup to refuse to register music offerings before they can accept
+ * payment they can't fulfil.
+ */
+export function assertReady(): void {
+  requireApiKey();
+}
+
 function jsonHeaders(idempotencyKey?: string): Record<string, string> {
   const h: Record<string, string> = {
     Authorization: `Bearer ${requireApiKey()}`,

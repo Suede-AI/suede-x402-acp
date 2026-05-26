@@ -69,3 +69,34 @@ export async function deliverJob(
 
   return await client.post(`/acp/providers/jobs/${jobId}/deliverable`, params);
 }
+
+// -- Failure delivery --
+//
+// When executeJob throws after the buyer has already paid, the seller must
+// still close the loop with ACP. ACP has no dedicated "fail" endpoint for
+// the TRANSACTION phase — instead we deliver a structured error payload
+// through the standard /deliverable route so the buyer's evaluator can
+// detect the failure in EVALUATION and refund per ACP convention. Without
+// this call, the job hangs in TRANSACTION until EXPIRED and the buyer has
+// no signal that the seller couldn't fulfil.
+
+export async function deliverJobFailure(
+  jobId: number,
+  reason: string
+): Promise<void> {
+  console.error(
+    `[sellerApi] deliverJobFailure  jobId=${jobId}  reason=${reason}`
+  );
+  const errorDeliverable = JSON.stringify({
+    type: "error",
+    error: {
+      message: reason,
+      sellerNote:
+        "The seller accepted this job and received payment but could not " +
+        "fulfil it. Reject this deliverable in EVALUATION to trigger refund.",
+    },
+  });
+  return await client.post(`/acp/providers/jobs/${jobId}/deliverable`, {
+    deliverable: errorDeliverable,
+  });
+}
