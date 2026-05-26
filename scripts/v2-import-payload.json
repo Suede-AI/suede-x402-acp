@@ -2,7 +2,7 @@
   "jobs": [
     {
       "name": "agent_quick_score",
-      "description": "Instant ACP/x402 readiness score for any agent, business, app, or token. Suede crawls the public surface (Virtuals manifest, x402 endpoints, website, on-chain footprint), runs the same hybrid heuristic + LLM scoring engine that powers acp.suedeai.ai, and returns a 0–100 Performance Index with seven sub-scores plus a verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Designed to fire in under five minutes so Butler can route quick triage jobs with zero friction.",
+      "description": "Instant ACP profile score for any Virtuals agent. Suede fetches the agent's structured ACP data (offerings, resources, chains, on-chain settlement) via api.acp.virtuals.io and grades it across seven ACP-side dimensions only: discoverability, offer quality, pricing signal, trust/proof, x402/stablecoin, ACP compatibility, market opportunity. Returns a 0-100 Performance Index plus verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Brand and web surface explicitly NOT scored.",
       "slaMinutes": 5,
       "requirement": {
         "type": "object",
@@ -16,7 +16,7 @@
           }
         }
       },
-      "deliverable": "Performance Index (0–100), seven sub-scores, verdict band, single-line headline, top blocker, single recommended next move.",
+      "deliverable": "Performance Index (0-100), seven ACP-side sub-scores, verdict band, single-line headline, top blocker, single recommended next move. Scoring method: ACP profile data only (no brand-surface crawling).",
       "requiredFunds": false,
       "hide": false,
       "subscriptionTiers": [],

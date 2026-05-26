@@ -164,6 +164,26 @@ const DELIVERABLES: Record<string, string> = {
     "AI-generated MP4 video from prompt with broad creative latitude (less constrained than the named general/meme/product_showcase variants). Delivered as a public URL.",
 };
 
+// Overrides applied to EXISTING v2 jobs whose dashboard description/deliverable
+// no longer matches the deployed handler behavior. Used to keep the public
+// marketing in sync with the worker code.
+//
+// agent_quick_score was rewritten in commit 02a0450 to score ACP profile data
+// only (via api.acp.virtuals.io), not URL crawling. The original description
+// said "Suede crawls the public surface (Virtuals manifest, x402 endpoints,
+// website, on-chain footprint)" — that is no longer accurate.
+const JOB_OVERRIDES: Record<
+  string,
+  { description?: string; deliverable?: string }
+> = {
+  agent_quick_score: {
+    description:
+      "Instant ACP profile score for any Virtuals agent. Suede fetches the agent's structured ACP data (offerings, resources, chains, on-chain settlement) via api.acp.virtuals.io and grades it across seven ACP-side dimensions only: discoverability, offer quality, pricing signal, trust/proof, x402/stablecoin, ACP compatibility, market opportunity. Returns a 0-100 Performance Index plus verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Brand and web surface explicitly NOT scored.",
+    deliverable:
+      "Performance Index (0-100), seven ACP-side sub-scores, verdict band, single-line headline, top blocker, single recommended next move. Scoring method: ACP profile data only (no brand-surface crawling).",
+  },
+};
+
 function loadLocalOfferings(rootDir: string): Map<string, LocalOffering> {
   const offeringsRoot = path.resolve(
     rootDir,
@@ -223,6 +243,26 @@ function main(): void {
   const rootDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
   const localOfferings = loadLocalOfferings(rootDir);
 
+  // Apply JOB_OVERRIDES to existing v2 jobs in place. Validate description
+  // length so we don't break the 500-char ceiling.
+  const overriddenJobs: string[] = [];
+  for (const job of exportData.jobs) {
+    const override = JOB_OVERRIDES[job.name];
+    if (!override) continue;
+    if (override.description !== undefined) {
+      if (override.description.length > MAX_DESCRIPTION) {
+        throw new Error(
+          `Override description for "${job.name}" is ${override.description.length} chars; v2 requires ≤${MAX_DESCRIPTION}.`,
+        );
+      }
+      job.description = override.description;
+    }
+    if (override.deliverable !== undefined) {
+      job.deliverable = override.deliverable;
+    }
+    overriddenJobs.push(job.name);
+  }
+
   const newJobs: DashboardJob[] = [];
   for (const [name, local] of localOfferings) {
     if (existingJobNames.has(name)) continue;
@@ -258,6 +298,7 @@ function main(): void {
   const summary = {
     existingJobs: exportData.jobs.length,
     newJobs: newJobs.length,
+    overriddenJobs,
     totalJobs: payload.jobs.length,
     totalResources: payload.resources.length,
     newJobNames: newJobs.map((j) => j.name),
