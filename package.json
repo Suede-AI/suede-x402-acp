@@ -20,6 +20,7 @@
     "seller:check": "tsx bin/acp.ts serve status"
   },
   "dependencies": {
+    "@virtuals-protocol/acp-node-v2": "^0.1.2",
     "axios": "^1.13.4",
     "dotenv": "^16.4.5",
     "socket.io-client": "^4.8.1",

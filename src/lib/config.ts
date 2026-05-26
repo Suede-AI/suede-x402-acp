@@ -23,6 +23,19 @@ export interface AgentEntry {
   active: boolean;
 }
 
+export interface AgentV2Entry {
+  uuid: string;
+  name: string;
+  walletEvm: string;
+  walletSol: string;
+  builderCode: string;
+  computeApiKey: string;
+  privyAppId: string | null;
+  privyWalletId: string | null;
+  signerPrivateKey: string | null;
+  active: boolean;
+}
+
 export interface RailwayProjectConfig {
   project: string;
   environment: string;
@@ -44,6 +57,7 @@ export interface ConfigJson {
   SELLER_PID?: number;
   OPENCLAW_BOUNTY_CRON_JOB_ID?: string;
   agents?: AgentEntry[];
+  agentsV2?: AgentV2Entry[];
   DEPLOYS?: Record<string, DeployInfo>; // keyed by agent ID
 }
 
@@ -174,6 +188,12 @@ export function findSellerPid(): number | undefined {
 export function getActiveAgent(): AgentEntry | undefined {
   const config = readConfig();
   return config.agents?.find((a) => a.active);
+}
+
+/** Get the currently active v2 agent from the agentsV2 array. */
+export function getActiveAgentV2(): AgentV2Entry | undefined {
+  const config = readConfig();
+  return config.agentsV2?.find((a) => a.active);
 }
 
 /** Find an agent by name (case-insensitive). */

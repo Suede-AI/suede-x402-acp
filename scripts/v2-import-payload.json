@@ -1,0 +1,1420 @@
+{
+  "jobs": [
+    {
+      "name": "agent_quick_score",
+      "description": "Instant ACP/x402 readiness score for any agent, business, app, or token. Suede crawls the public surface (Virtuals manifest, x402 endpoints, website, on-chain footprint), runs the same hybrid heuristic + LLM scoring engine that powers acp.suedeai.ai, and returns a 0–100 Performance Index with seven sub-scores plus a verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Designed to fire in under five minutes so Butler can route quick triage jobs with zero friction.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "target"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "URL or wallet/agent identifier to score."
+          }
+        }
+      },
+      "deliverable": "Performance Index (0–100), seven sub-scores, verdict band, single-line headline, top blocker, single recommended next move.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 3
+      }
+    },
+    {
+      "name": "acp_offer_optimization",
+      "description": "Rewrite and package ACP jobs so buyer agents can discover, understand, buy, evaluate, and reuse them. Suede improves job names, descriptions, input schemas, deliverables, pricing, SLA, resources, and keywords around measurable agent-commerce performance.",
+      "slaMinutes": 45,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "agent_or_business",
+          "what_you_sell"
+        ],
+        "properties": {
+          "what_you_sell": {
+            "type": "string",
+            "description": "The service, API, product, workflow, data, or outcome the buyer agent should purchase."
+          },
+          "agent_or_business": {
+            "type": "string",
+            "description": "Agent, business, app, token, creator, service, or ACP profile to optimize."
+          },
+          "current_offerings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional current ACP jobs, APIs, services, resources, subscriptions, or offers."
+          },
+          "target_buyer_agent": {
+            "type": "string",
+            "description": "Optional buyer agent, audience, ecosystem, or customer segment."
+          }
+        }
+      },
+      "deliverable": "Optimized ACP profile copy + 3–7 buyable job offerings with prices, SLAs, requirements schemas, deliverables, resources, keywords, and performance rationale.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 39
+      }
+    },
+    {
+      "name": "acp_x402_promotion_plan",
+      "description": "Build a distribution plan for an ACP/x402 seller across the channels that actually drive agent demand: Virtuals discovery, x402 directories, Stripe Agentic Commerce, founder/operator outreach, traditional media, and creator platforms. Output is a sequenced 14-day promotion plan with targets, copy, and asset list.",
+      "slaMinutes": 45,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "agent_or_business",
+          "primary_offer"
+        ],
+        "properties": {
+          "audience": {
+            "type": "string",
+            "description": "Optional ideal buyer, ecosystem, or partner segment."
+          },
+          "primary_offer": {
+            "type": "string",
+            "description": "The headline product / service / job buyers should know about."
+          },
+          "agent_or_business": {
+            "type": "string",
+            "description": "Agent, business, or offer to promote."
+          }
+        }
+      },
+      "deliverable": "14-day promotion plan across ACP, x402, Stripe Agentic, X / LinkedIn, founder outreach, and (where relevant) traditional media. Includes target list, sequenced posts, copy, and asset checklist.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 39
+      }
+    },
+    {
+      "name": "acp_performance_audit",
+      "description": "Score an existing agent, app, token, creator, or service for Virtuals ACP performance. Suede reviews the profile, jobs, pricing, schemas, deliverables, resources, buyer fit, discovery, and revenue blockers, and returns a Performance Index with sub-scores and a verdict band (REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1%). Built on the same scoring engine that powers acp.suedeai.ai.",
+      "slaMinutes": 35,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "acp_profile_or_offer",
+          "performance_goal"
+        ],
+        "properties": {
+          "constraints": {
+            "type": "string",
+            "description": "Optional brand, legal, fulfillment, pricing, or claims constraints."
+          },
+          "current_metrics": {
+            "type": "string",
+            "description": "Optional current ACP stats (jobs, revenue, unique wallets, reviews, traffic)."
+          },
+          "performance_goal": {
+            "type": "string",
+            "description": "What should improve: discoverability, job buys, revenue/aGDP, conversion, pricing, repeat buyers, trust, category positioning."
+          },
+          "acp_profile_or_offer": {
+            "type": "string",
+            "description": "ACP profile URL, agent URL, product URL, token page, or current offer text to audit."
+          }
+        }
+      },
+      "deliverable": "Performance Index (0–100) + 7 sub-scores + verdict band + ranked top blockers + optimized positioning + job/pricing fixes + schema fixes + prioritized revenue actions.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 19
+      }
+    },
+    {
+      "name": "acp_buyer_growth_list",
+      "description": "Find qualified buyer agents, partners, customers, creators, projects, or communities that can grow an ACP seller's revenue. Suede turns the seller's offer into a practical target list for distribution, partnerships, and repeat job demand.",
+      "slaMinutes": 45,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "acp_offer",
+          "target_buyer"
+        ],
+        "properties": {
+          "acp_offer": {
+            "type": "string",
+            "description": "The ACP job, agent, API, service, product, or business that needs more buyers."
+          },
+          "exclusions": {
+            "type": "string",
+            "description": "Optional competitors, categories, geographies, or contacts to avoid."
+          },
+          "target_buyer": {
+            "type": "string",
+            "description": "Ideal buyer agent, partner, creator, app, token, company, community, or user type."
+          },
+          "market_or_platform": {
+            "type": "string",
+            "description": "Optional Virtuals/ACP segment, chain, social platform, app store, niche, region, or ecosystem to search."
+          }
+        }
+      },
+      "deliverable": "10 qualified ACP buyer or partner targets with URL, fit reason, purchase/partnership angle, contact path, outreach line, and priority ranking.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 15
+      }
+    },
+    {
+      "name": "acp_market_arbitrage_report",
+      "description": "Find under-priced, under-served, or under-supplied agentic-commerce categories that match an existing offer. Suede analyzes Virtuals listings, x402 directories, buyer-agent demand patterns, and category overlap to surface where the spread is widest. Output is a ranked arbitrage map: where to enter, what to charge, how to phrase the job so buyer agents route to you.",
+      "slaMinutes": 60,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "agent_or_business",
+          "what_you_sell"
+        ],
+        "properties": {
+          "what_you_sell": {
+            "type": "string",
+            "description": "The product / service / data the offer revolves around."
+          },
+          "agent_or_business": {
+            "type": "string",
+            "description": "Agent, business, or offer the arbitrage map is scoped to."
+          },
+          "exclude_categories": {
+            "type": "string",
+            "description": "Optional categories to exclude (already saturated, off-brand, off-limits)."
+          }
+        }
+      },
+      "deliverable": "Ranked arbitrage map: 5–8 candidate categories with current saturation, current pricing, recommended price, recommended positioning, and a one-line job description to ship.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 29
+      }
+    },
+    {
+      "name": "acp_agent_setup",
+      "description": "Set up or package a business, creator, app, token, or service for Virtuals ACP. Suede turns a non-agent business or rough idea into an ACP-ready agent profile with jobs, pricing, schemas, resources, and launch positioning. For deeper setup work (off-Virtuals businesses, multi-product strategies), the Custom Setup Quote at acp.suedeai.ai dynamic-prices the work.",
+      "slaMinutes": 60,
+      "requirement": {
+        "type": "object",
+        "required": [
+          "business_or_project",
+          "what_you_sell"
+        ],
+        "properties": {
+          "current_links": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional website, app store, token, docs, social, Stripe, x402, Virtuals, or product links."
+          },
+          "owner_context": {
+            "type": "string",
+            "description": "Optional founder, team, brand, fulfillment constraints, or who will operate the agent."
+          },
+          "what_you_sell": {
+            "type": "string",
+            "description": "The service, API, content, data, product, or outcome that should become buyable by agents."
+          },
+          "business_or_project": {
+            "type": "string",
+            "description": "Business, app, creator, token, agent, product, website, or idea to package for ACP."
+          }
+        }
+      },
+      "deliverable": "ACP setup package: agent positioning, public description, 3–7 job offerings, pricing, SLAs, requirement schemas, deliverables, resources, keywords, launch checklist.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 49
+      }
+    },
+    {
+      "name": "general_video",
+      "description": "Suede Labs AI video producer for agents that need a finished 10-second clip from a text prompt. Cinematic, promo, explainer, music, brand, product, or meme-adjacent. Optional reference image URLs. Supports 16:9 / 9:16 / 1:1, pro or std quality, and optional generated sound. Best for agent workflows needing paid x402/ACP media generation, short-form content, ad creative, launch visuals, pitch assets, or branded video from natural language.",
+      "slaMinutes": 25,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 3000,
+            "description": "Detailed text description of the video to generate. Include subject, scene, motion, camera style, mood, brand cues, audience, and any must-have visual details.",
+            "examples": [
+              "A cinematic 10-second vertical launch video for an AI music app, neon studio lighting, fast camera push-in, energetic creator economy feel",
+              "A luxury product reveal on a clean white background with slow orbiting camera movement and subtle sparkle effects"
+            ]
+          },
+          "image_urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "maxItems": 4,
+            "description": "Optional public HTTP(S) reference image URLs for product, character, brand, style, or composition guidance."
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9",
+            "description": "Output framing. Use 16:9 for web and YouTube, 9:16 for TikTok/Reels/Shorts, or 1:1 for feed posts."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "pro",
+              "std"
+            ],
+            "default": "pro",
+            "description": "Quality mode. Use pro for higher quality commercial output or std for faster exploratory generation."
+          },
+          "sound": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to request generated sound with the video. Defaults to true."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "A polished 10-second 9:16 video for Suede Labs showing an AI music producer turning a prompt into a cinematic performance clip, modern studio, energetic camera movement",
+            "aspect_ratio": "9:16",
+            "mode": "pro",
+            "sound": true
+          }
+        ]
+      },
+      "deliverable": "MP4 video at the requested aspect ratio (16:9 / 9:16 / 1:1) and quality mode (pro/std), with optional generated sound. Delivered as a public URL plus a Suede share page.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 8
+      }
+    },
+    {
+      "name": "meme_video",
+      "description": "Suede Labs meme-format video for agent workflows that need a punchy short clip from a text prompt. Optimized for 9:16 social formats (TikTok / Reels / Shorts) with cinematic motion. Best for paid x402/ACP meme generation, viral creative experiments, brand humor, and reaction posts.",
+      "slaMinutes": 25,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 2000,
+            "description": "Creative description of the meme video. Include the joke, visual setup, character, movement, social platform, and desired energy.",
+            "examples": [
+              "A chaotic vertical meme clip about an AI agent discovering it can pay for APIs with x402, fast zooms, absurd startup energy",
+              "A funny reaction video for a crypto launch, exaggerated excitement, quick camera movement, social feed style"
+            ]
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional public HTTP(S) reference image URL, such as a meme template, product image, mascot, character, or starting frame."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "A vertical 8-second meme clip for Suede Labs: an AI producer cooking up a viral music video while other agents rush to hire it, funny and high-energy"
+          }
+        ]
+      },
+      "deliverable": "Short meme-format MP4 video at the requested aspect ratio (typically 9:16). Delivered as a public URL plus a Suede share page.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 6
+      }
+    },
+    {
+      "name": "product_showcase_video",
+      "description": "Suede Labs product showcase video built from a text prompt and up to four reference image URLs. Generates a finished 10-second product reveal at 16:9, 9:16, or 1:1. Best for agents producing ad creative, store assets, brand drops, launch visuals, or any commerce-bound short video where the product must be the hero.",
+      "slaMinutes": 25,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the product image to animate. Use a clear product photo with the full item visible."
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 1500,
+            "description": "Optional creative direction for motion, camera, lighting, background, mood, and brand style.",
+            "examples": [
+              "rotate slowly on a clean white background with soft studio lighting",
+              "premium close-up with slow zoom, luxury reflections, and subtle sparkle effects"
+            ]
+          }
+        },
+        "required": [
+          "image_url"
+        ],
+        "examples": [
+          {
+            "image_url": "https://example.com/product.png",
+            "prompt": "A crisp ecommerce ad with a slow orbit, soft shadows, premium white studio background, and subtle light sweep"
+          }
+        ]
+      },
+      "deliverable": "Product-focused MP4 video built from prompt + optional reference images at the requested aspect ratio. Delivered as a public URL plus a Suede share page.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 6
+      }
+    },
+    {
+      "name": "product_showcase_video_10s",
+      "description": "Suede Labs premium 10-second product showcase video at pro quality. Prompt + optional reference image URLs become a polished product reveal at 16:9, 9:16, or 1:1. Best for agents producing high-end ad creative, brand launch visuals, or repeatable commerce media where production polish drives conversion.",
+      "slaMinutes": 25,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the product image to animate. Use the clearest product image available."
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 1500,
+            "description": "Optional direction for camera path, lighting, environment, pacing, product positioning, and brand tone.",
+            "examples": [
+              "orbit around product with dramatic lighting, premium black studio, subtle reflections",
+              "slow zoom with luxury feel, clean white background, soft shadows, polished ecommerce style"
+            ]
+          }
+        },
+        "required": [
+          "image_url"
+        ],
+        "examples": [
+          {
+            "image_url": "https://example.com/product.png",
+            "prompt": "A 10-second premium showcase with slow orbit, dramatic light sweep, detailed close-up, and polished launch-video feel"
+          }
+        ]
+      },
+      "deliverable": "10-second premium product showcase MP4 video built from prompt + optional reference images. Delivered as a public URL plus a Suede share page.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 10
+      }
+    },
+    {
+      "name": "suede_video_generation",
+      "description": "General-purpose AI video generation from a text prompt with broad creative latitude (looser than the named general_video / meme_video / product_showcase variants). Suitable for exploratory short video, concept tests, and agent workflows that need a video output without a strict format preset.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000,
+            "description": "Narrative or visual prompt to drive the video. Include subject, scene, motion, camera style, and mood."
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 30,
+            "default": 8,
+            "description": "Clip length in seconds."
+          },
+          "aspectRatio": {
+            "type": "string",
+            "enum": [
+              "16:9",
+              "9:16",
+              "1:1"
+            ],
+            "default": "16:9",
+            "description": "Output framing."
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "720p",
+              "1024p"
+            ],
+            "default": "720p",
+            "description": "Target rendering resolution."
+          },
+          "seed": {
+            "type": "integer",
+            "description": "Optional random seed for reproducible renders."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "A vertical 9:16 8-second clip of neon city skyline pulsing to a synthwave beat, slow camera push-in.",
+            "durationSeconds": 8,
+            "aspectRatio": "9:16",
+            "resolution": "720p"
+          }
+        ]
+      },
+      "deliverable": "AI-generated MP4 video from prompt with broad creative latitude (less constrained than the named general/meme/product_showcase variants). Delivered as a public URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 3.75
+      }
+    },
+    {
+      "name": "suede_acapella",
+      "description": "Suede Labs acapella extractor for agents that need isolated vocals from a source track. Takes an audio URL and returns an MP3 of the isolated vocal stem. Best for agent workflows producing remixes, vocal covers, lyrics transcription, karaoke assets, and music analysis on the vocal alone.",
+      "slaMinutes": 6,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "mp3",
+              "flac"
+            ],
+            "default": "wav",
+            "description": "Audio format for the returned acapella."
+          },
+          "denoise": {
+            "type": "boolean",
+            "default": true,
+            "description": "When true, applies additional noise and bleed reduction to the isolated vocal."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/track.mp3",
+            "output_format": "wav",
+            "denoise": true
+          }
+        ]
+      },
+      "deliverable": "Acapella extraction (isolated vocals) from an input audio URL. Delivered as a public MP3 URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.5
+      }
+    },
+    {
+      "name": "suede_audio_analyze",
+      "description": "Suede Labs audio analyzer for agents that need objective features extracted from a track. Takes an audio URL and returns a structured JSON report with key, tempo, energy, mood, and detected instruments. Best for agent workflows producing music tagging, catalog enrichment, recommendation systems, and rights workflows that need machine-readable audio metadata.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL to an audio file (mp3, wav, flac, m4a, or ogg)."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://cdn.suedeai.xyz/example.mp3"
+          }
+        ]
+      },
+      "deliverable": "Audio analysis (key, tempo, energy, mood, instruments) for an input audio URL. Delivered as a structured JSON report.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.01
+      }
+    },
+    {
+      "name": "suede_continue",
+      "description": "Suede Labs music continuation for agents that need a variation or sequel of an existing track. Takes a source audio URL and returns a new MP3 continuing the same musical direction. Best for agent workflows generating multi-track releases, B-sides, follow-up cuts, and remix-adjacent variations.",
+      "slaMinutes": 8,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the seed audio to continue. Supports mp3, wav, flac, m4a, and ogg up to 4 minutes long."
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Optional steering prompt describing how the continuation should develop (add chorus, introduce vocals, modulate up a step, breakdown then drop, etc.)."
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 240,
+            "default": 60,
+            "description": "Total duration in seconds to generate after the seed. Must be between 10 and 240 seconds."
+          },
+          "section_hint": {
+            "type": "string",
+            "enum": [
+              "verse",
+              "chorus",
+              "bridge",
+              "breakdown",
+              "drop",
+              "outro",
+              "auto"
+            ],
+            "default": "auto",
+            "description": "Hint for the structural section to generate next. Use auto to let the Suede pipeline choose based on the seed."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/sketch.mp3",
+            "prompt": "Build into a euphoric chorus with layered vocals and big drums.",
+            "duration_seconds": 90,
+            "section_hint": "chorus"
+          }
+        ]
+      },
+      "deliverable": "Continuation or variation of an existing track from an input URL. Delivered as a public MP3 URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 1
+      }
+    },
+    {
+      "name": "suede_cover",
+      "description": "Suede Labs cover engine for agents that need a source track re-recorded in a different style, genre, or instrumentation. Takes a source audio URL and returns a new MP3 cover. Best for paid x402/ACP music pipelines, brand re-skinning, style A/B tests, and creator workflows that monetize covers.",
+      "slaMinutes": 8,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "track_id": {
+            "type": "string",
+            "description": "Suede Labs track identifier of a previously generated or registered track. Either track_id or audio_url is required."
+          },
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file to cover. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long. Either track_id or audio_url is required."
+          },
+          "style_prompt": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500,
+            "description": "Target style or genre description. Examples: 'acoustic folk ballad', '80s synthwave', 'lo-fi hip-hop bedroom mix', 'orchestral cinematic'."
+          },
+          "preserve_vocals": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, attempts to keep the original vocal performance and re-render only the instrumental bed. When false, regenerates the full arrangement."
+          }
+        },
+        "required": [
+          "style_prompt"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/track.mp3",
+            "style_prompt": "80s synthwave with gated reverb drums and analog pads",
+            "preserve_vocals": true
+          },
+          {
+            "track_id": "suede_trk_01H8XYZ",
+            "style_prompt": "acoustic folk ballad with fingerpicked guitar"
+          }
+        ]
+      },
+      "deliverable": "Cover version of a source track in the requested style or instrumentation. Delivered as a public MP3 URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 1
+      }
+    },
+    {
+      "name": "suede_extend",
+      "description": "Suede Labs music extender for agents that need an existing track lengthened. Takes a source audio URL and returns an extended MP3 that continues the composition coherently. Best for paid x402/ACP music pipelines, looping ads, longer cuts of generated tracks, and agent workflows producing radio-length variants.",
+      "slaMinutes": 8,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "track_id": {
+            "type": "string",
+            "description": "Suede Labs track identifier of a previously generated or registered track. Either track_id or audio_url is required."
+          },
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file to extend. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long. Either track_id or audio_url is required."
+          },
+          "duration_seconds": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 240,
+            "description": "Additional duration in seconds to append to the source track. Must be between 5 and 240 seconds."
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Optional steering prompt describing how the extension should evolve (energy build, breakdown, outro fade, key change hint, etc.)."
+          }
+        },
+        "required": [
+          "duration_seconds"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/track.mp3",
+            "duration_seconds": 60,
+            "prompt": "Build energy into a final drop, then fade to outro."
+          },
+          {
+            "track_id": "suede_trk_01H8XYZ",
+            "duration_seconds": 30
+          }
+        ]
+      },
+      "deliverable": "Music track extended from an existing audio URL. Delivered as a public MP3 URL of the extended composition.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 1
+      }
+    },
+    {
+      "name": "suede_lyric_sync",
+      "description": "Suede Labs LRC generator for agents that need timed/synced lyrics for a song from an audio URL. Returns an LRC text file with timestamps. Best for agent workflows producing karaoke assets, music video lyric overlays, accessibility captions, and music players that need synced display.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 10 minutes long."
+          },
+          "lyrics": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000,
+            "description": "Plain-text lyrics for the song, with line breaks preserved. Section labels in brackets like [Verse 1] or [Chorus] are preserved in output."
+          },
+          "language": {
+            "type": "string",
+            "description": "Optional BCP-47 language tag of the lyrics (e.g. 'en', 'es', 'ja', 'pt-BR'). When omitted, language is auto-detected.",
+            "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "lrc",
+              "enhanced_lrc",
+              "json",
+              "vtt"
+            ],
+            "default": "enhanced_lrc",
+            "description": "Output format. enhanced_lrc and json include word-level timing; lrc and vtt are line-level."
+          }
+        },
+        "required": [
+          "audio_url",
+          "lyrics"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/song.mp3",
+            "lyrics": "[Verse 1]\nFirst line of the song\nSecond line of the song\n\n[Chorus]\nHook line one\nHook line two",
+            "language": "en",
+            "format": "enhanced_lrc"
+          }
+        ]
+      },
+      "deliverable": "Synchronized LRC-format lyrics for a song built from an input audio URL. Delivered as a public LRC text URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.25
+      }
+    },
+    {
+      "name": "suede_lyrics",
+      "description": "Suede Labs lyric writer for agents that need original song lyrics from a topic, style, or brief. Returns plain UTF-8 text with verse/chorus structure. Best for agent workflows that drive songwriting, brand jingles, social audio scripting, vocal-cover prep, or batch-generated content pipelines.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000,
+            "description": "Free-text description of the song's topic, mood, perspective, reference style, or storyline."
+          },
+          "language": {
+            "type": "string",
+            "description": "Optional BCP-47 language tag for the generated lyrics (e.g. 'en', 'es', 'ja', 'pt-BR'). Defaults to English.",
+            "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+            "default": "en"
+          },
+          "structure": {
+            "type": "string",
+            "description": "Optional section structure as a dash-separated list. Defaults to 'verse-chorus-verse-chorus-bridge-chorus'.",
+            "default": "verse-chorus-verse-chorus-bridge-chorus"
+          },
+          "rhyme_scheme": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "abab",
+              "aabb",
+              "abba",
+              "free"
+            ],
+            "default": "auto",
+            "description": "Preferred rhyme scheme per section."
+          },
+          "explicit_allowed": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether explicit language is permitted in the generated lyrics."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "A late-night drive through a rainy city, missing someone, indie-pop in the style of warm 2010s alternative.",
+            "language": "en",
+            "structure": "verse-chorus-verse-chorus-bridge-chorus",
+            "rhyme_scheme": "abab"
+          }
+        ]
+      },
+      "deliverable": "Original song lyrics matching the topic/style brief. Delivered as plain UTF-8 text.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.1
+      }
+    },
+    {
+      "name": "suede_master_wav",
+      "description": "Suede Labs mastering pass for agents that need an input mix mastered to a polished WAV. Takes a mix URL and returns a mastered WAV. Best for agent workflows producing ready-to-release tracks, ad music finalization, and any music pipeline that needs broadcast-loud, mastered audio.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the mixed audio file to master. Supports wav, flac, aiff, and mp3 up to 15 minutes long. wav or flac strongly recommended for best results."
+          },
+          "target_loudness_lufs": {
+            "type": "number",
+            "minimum": -23,
+            "maximum": -6,
+            "default": -14,
+            "description": "Integrated loudness target in LUFS. Defaults to -14 LUFS (streaming standard). Use -16 for podcasts, -23 for EBU R128 broadcast, -9 for club masters."
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "flac",
+              "mp3"
+            ],
+            "default": "wav",
+            "description": "Output container."
+          },
+          "preset": {
+            "type": "string",
+            "enum": [
+              "neutral",
+              "warm",
+              "bright",
+              "punchy",
+              "vintage"
+            ],
+            "default": "neutral",
+            "description": "Tonal balance preset to apply during mastering."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/mix.wav",
+            "target_loudness_lufs": -14,
+            "output_format": "wav",
+            "preset": "neutral"
+          }
+        ]
+      },
+      "deliverable": "Mastered WAV file from an input mix URL. Delivered as a public WAV URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.25
+      }
+    },
+    {
+      "name": "suede_midi",
+      "description": "Suede Labs MIDI transcriber for agents that need an audio source converted to a MIDI file. Takes an audio URL and returns a MIDI file. Best for agent workflows producing arrangement prep, music theory analysis, instrument re-recording, and downstream tasks that need note-level data.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 10 minutes long."
+          },
+          "instrument": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "piano",
+              "guitar",
+              "bass",
+              "drums",
+              "vocals",
+              "strings",
+              "synth"
+            ],
+            "default": "auto",
+            "description": "Restrict transcription to a single instrument family, or auto to transcribe everything detected."
+          },
+          "quantize": {
+            "type": "string",
+            "enum": [
+              "none",
+              "1/4",
+              "1/8",
+              "1/16",
+              "1/32"
+            ],
+            "default": "none",
+            "description": "Optional grid quantization for note start times. Use 'none' to preserve performed micro-timing."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/piano_piece.mp3",
+            "instrument": "piano",
+            "quantize": "1/16"
+          }
+        ]
+      },
+      "deliverable": "MIDI transcription of an input audio URL. Delivered as a public MIDI file URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.25
+      }
+    },
+    {
+      "name": "suede_music_generation",
+      "description": "Suede Labs AI music producer for agents that need an original track from a text prompt. Generates a full MP3 with title, style, and tempo metadata. Best for paid x402/ACP music generation, jingles, social audio, ad music, drops, sample beds, and agent-bound creative workflows that need royalty-free original audio fast.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000,
+            "description": "Describe the song you want to create. Include genre, mood, instruments, and any specific vibe.",
+            "examples": [
+              "An upbeat 80s synthwave instrumental with driving bassline, neon arpeggios, and 120 BPM energy.",
+              "A 30-second ambient lofi beat with vinyl crackle, mellow electric piano, and late-night studio mood."
+            ]
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 120,
+            "default": 30,
+            "description": "Length of the generated track in seconds. Use shorter durations for stings, longer for background scoring."
+          },
+          "style": {
+            "type": "string",
+            "description": "Optional style or genre tag (e.g. 'synthwave', 'lofi', 'orchestral')."
+          },
+          "make_instrumental": {
+            "type": "boolean",
+            "default": true,
+            "description": "When true, generates an instrumental track without vocals. Defaults to true for broad licensing flexibility."
+          },
+          "custom_mode": {
+            "type": "boolean",
+            "default": false,
+            "description": "When true, uses the lyrics provided in 'lyrics' verbatim instead of auto-generating from the prompt."
+          },
+          "lyrics": {
+            "type": "string",
+            "description": "Custom lyrics to sing. Required when custom_mode is true."
+          },
+          "vocal_gender": {
+            "type": "string",
+            "enum": [
+              "m",
+              "f"
+            ],
+            "description": "Preferred vocal gender when vocals are enabled."
+          },
+          "tags": {
+            "type": "string",
+            "description": "Optional comma-separated keywords stored with the generated asset."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "A 30-second cinematic synthwave background track for an AI music app launch, neon energy, driving bass, modern production.",
+            "durationSeconds": 30,
+            "make_instrumental": true
+          }
+        ]
+      },
+      "deliverable": "Original MP3 track generated from the text prompt, including title, style, and tempo metadata. Delivered as a public URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.5
+      }
+    },
+    {
+      "name": "suede_rights_lookup",
+      "description": "Suede Labs rights and licensing lookup for agents that need clearance information on a source audio identifier (ISRC, URL, or title). Returns a structured JSON report. Best for agent workflows producing clearance checks, sync-license prep, and music-rights triage before a production pipeline commits.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "asset_hash": {
+            "type": "string",
+            "pattern": "^(0x)?[0-9a-fA-F]{64}$",
+            "description": "SHA-256 or keccak-256 hex digest of the asset. Accepts 64-char hex with or without 0x prefix."
+          },
+          "include_license": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether to include attached license terms in the response. Adds a small latency cost; leave false for fastest registration-only checks."
+          }
+        },
+        "required": [
+          "asset_hash"
+        ],
+        "examples": [
+          {
+            "asset_hash": "0x3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b"
+          }
+        ]
+      },
+      "deliverable": "Rights and licensing lookup for an input source audio identifier. Delivered as a structured JSON report.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.01
+      }
+    },
+    {
+      "name": "suede_stems",
+      "description": "Suede Labs stem splitter for agents that need a source track separated into vocals, drums, bass, and other stems. Takes an audio URL and returns a ZIP of stem MP3s. Best for agent workflows producing remixes, sample prep, karaoke builds, and downstream tasks that need clean isolated layers.",
+      "slaMinutes": 8,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file to separate. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "vocal_inst",
+              "drum_other"
+            ],
+            "default": "vocal_inst",
+            "description": "Split mode. vocal_inst returns isolated vocals plus full instrumental bed. drum_other returns isolated drums plus everything else."
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "mp3",
+              "flac"
+            ],
+            "default": "mp3",
+            "description": "Audio format for the returned stems."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/track.mp3",
+            "mode": "vocal_inst",
+            "output_format": "mp3"
+          }
+        ]
+      },
+      "deliverable": "Multi-stem separation (vocals, drums, bass, other) from a source track. Delivered as a public ZIP URL containing each stem.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.5
+      }
+    },
+    {
+      "name": "suede_stems_pro",
+      "description": "Suede Labs HD stem splitter for agents that need high-fidelity stem separation on a source track. Takes an audio URL and returns a ZIP of pro-quality stems suitable for production use. Best for agent workflows monetizing remix kits, studio prep, and audio engineering pipelines that need broadcast-grade stems.",
+      "slaMinutes": 10,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source audio file to separate. Supports mp3, wav, flac, m4a, and ogg up to 15 minutes long."
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "mp3",
+              "flac"
+            ],
+            "default": "wav",
+            "description": "Audio format for the returned stems. Use wav or flac for production work, mp3 for fast previews."
+          },
+          "sample_rate": {
+            "type": "integer",
+            "enum": [
+              44100,
+              48000
+            ],
+            "default": 44100,
+            "description": "Sample rate of the returned stems. Use 48000 for video post-production deliverables."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/track.wav",
+            "output_format": "wav",
+            "sample_rate": 48000
+          }
+        ]
+      },
+      "deliverable": "High-fidelity multi-stem separation from a source track. Delivered as a public ZIP URL containing each HD stem.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 1
+      }
+    },
+    {
+      "name": "suede_style_coach",
+      "description": "Suede Labs production-style coach for agents that need mix and mastering recommendations on a track. Takes an audio URL and returns a plain-text report covering EQ, dynamics, balance, stereo image, and reference comparisons. Best for producer workflows, music release prep, and agent tools that surface concrete production fixes.",
+      "slaMinutes": 5,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Rough style description, loose tags, vibe references, or half-formed prompt."
+          },
+          "target_use": {
+            "type": "string",
+            "enum": [
+              "music_generation",
+              "cover",
+              "continuation",
+              "catalog_tagging",
+              "search"
+            ],
+            "default": "music_generation",
+            "description": "Downstream use the expanded prompt should be optimized for."
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 200,
+            "default": 80,
+            "description": "Approximate length cap for the expanded prompt, in tokens."
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "examples": [
+          {
+            "prompt": "sad guitar lofi",
+            "target_use": "music_generation",
+            "max_tokens": 80
+          }
+        ]
+      },
+      "deliverable": "Production-style analysis with mix and mastering recommendations for an input track. Delivered as a plain text report.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 0.05
+      }
+    },
+    {
+      "name": "suede_voice_cover",
+      "description": "Suede Labs AI vocal cover for agents that need a source track re-sung by a configurable AI voice (style, gender, age). Takes a source audio URL and returns a new MP3. Best for agent workflows producing creator-style vocal covers, brand voiceovers on existing songs, and demo vocals for music pipelines.",
+      "slaMinutes": 10,
+      "requirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "audio_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of the source song. The vocal will be isolated and replaced; the instrumental will remain. Supports mp3, wav, flac, m4a, and ogg up to 8 minutes long."
+          },
+          "voice_id": {
+            "type": "string",
+            "description": "Suede Labs registered voice identifier. Either voice_id or reference_voice_url is required."
+          },
+          "reference_voice_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) URL of a clean reference vocal sample (10-60 seconds, mono or stereo, mp3/wav/flac). Used for one-shot voice cloning. Either voice_id or reference_voice_url is required."
+          },
+          "rights_attestation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Confirmation that the requester has the legal right to use the specified voice. Suede Labs does not clear vocal likeness rights on behalf of the caller."
+          }
+        },
+        "required": [
+          "audio_url"
+        ],
+        "examples": [
+          {
+            "audio_url": "https://example.com/original_song.mp3",
+            "voice_id": "suede_voice_01H8ABC",
+            "rights_attestation": true
+          },
+          {
+            "audio_url": "https://example.com/original_song.mp3",
+            "reference_voice_url": "https://example.com/voice_sample.wav",
+            "rights_attestation": true
+          }
+        ]
+      },
+      "deliverable": "AI-voice vocal cover of a source track at the requested voice profile. Delivered as a public MP3 URL.",
+      "requiredFunds": false,
+      "hide": false,
+      "subscriptionTiers": [],
+      "price": {
+        "type": "fixed",
+        "value": 1
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "suede_performance_engine",
+      "description": "Public ACP/x402 Performance Engine — score any agent or business for agent-commerce readiness with REPLACEABLE / EXPOSED / ENTERING / POSITIONED / TOP 0.1% verdicts, sub-scores, and a shareable card.",
+      "url": "https://acp.suedeai.ai",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "suede_labs_ai",
+      "description": "Suede Labs: ACP-first agent-commerce and creator-economy business by Jason Colapietro, building AI apps, music/media services, and monetization rails for agents. $2.5M+ paid to creators.",
+      "url": "https://suedeai.ai",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "producer_public_profile",
+      "description": "Public ACP profile for Producer by Suede Labs.",
+      "url": "https://app.virtuals.io/acp/agents/019e3991-374d-75f3-a6b8-17ff309b4cd2",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "score_my_virtuals_agent",
+      "description": "Score my Virtuals agent — instant readiness check for Butler discoverability, offer quality, pricing, x402, and ACP compatibility.",
+      "url": "https://acp.suedeai.ai/take",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "rewrite_acp_jobs",
+      "description": "Rewrite ACP jobs for buyer-agent discoverability — Suede optimizes job names, descriptions, schemas, deliverables, pricing, and resources around Butler routing signals and ERC-8004 review mechanics.",
+      "url": "https://acp.suedeai.ai/take",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "find_buyer_agents",
+      "description": "Find buyer agents for an ACP seller — Suede builds a 10-target list with fit reason, contact path, and outreach line for distribution, partnerships, and repeat job demand on Virtuals.",
+      "url": "https://acp.suedeai.ai/take",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    },
+    {
+      "name": "strumly_music_oracle",
+      "description": "Strumly: the music oracle for agents, with x402, Stripe Agentic Commerce, Virtuals ACP discovery, and verified music data APIs. Suede's live music rail.",
+      "url": "https://strumly.suedeai.ai/.well-known/agentic-commerce.json",
+      "params": {
+        "type": "object",
+        "required": [],
+        "properties": {}
+      },
+      "hide": false
+    }
+  ]
+}
