@@ -1,0 +1,39 @@
+{
+  "name": "suede_midi",
+  "description": "Suede Labs MIDI transcription for producers, composers, music educators, transcribers, music notation publishers, plugin developers, music theory analysts, and agents building score-aware AI music pipelines. Converts an audio recording into a MIDI file with detected notes, velocities, timing, and per-instrument tracks where possible. Supports DAW import for remix and reproduction, sheet-music generation pipelines, music education and ear-training tools, sample tagging and metadata enrichment, ML training data for symbolic music models, and paid x402/ACP agent commerce.",
+  "jobFee": 0.25,
+  "jobFeeType": "fixed",
+  "slaMinutes": 4,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the source audio file. Supports mp3, wav, flac, m4a, and ogg up to 10 minutes long."
+      },
+      "instrument": {
+        "type": "string",
+        "enum": ["auto", "piano", "guitar", "bass", "drums", "vocals", "strings", "synth"],
+        "default": "auto",
+        "description": "Restrict transcription to a single instrument family, or auto to transcribe everything detected."
+      },
+      "quantize": {
+        "type": "string",
+        "enum": ["none", "1/4", "1/8", "1/16", "1/32"],
+        "default": "none",
+        "description": "Optional grid quantization for note start times. Use 'none' to preserve performed micro-timing."
+      }
+    },
+    "required": ["audio_url"],
+    "examples": [
+      {
+        "audio_url": "https://example.com/piano_piece.mp3",
+        "instrument": "piano",
+        "quantize": "1/16"
+      }
+    ]
+  }
+}

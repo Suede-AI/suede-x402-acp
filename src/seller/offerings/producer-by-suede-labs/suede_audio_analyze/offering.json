@@ -1,0 +1,25 @@
+{
+  "name": "suede_audio_analyze",
+  "description": "Suede Labs audio analysis for agents, music supervisors, content moderation pipelines, sample-tagging workflows, AI music DAW assistants, sync teams, and any workflow that needs to extract objective musical metadata from an arbitrary audio file. Returns BPM, key, mode, energy, danceability, loudness, duration, and a suggested genre tag. Useful for tempo-matched playlist building, key-compatible mashup discovery, automatic tag enrichment, music search, and paid x402/ACP agent commerce workflows that route to downstream music generation, cover, or sync calls.",
+  "jobFee": 0.01,
+  "jobFeeType": "fixed",
+  "slaMinutes": 1,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "HTTPS URL to an audio file (mp3, wav, flac, m4a, or ogg)."
+      }
+    },
+    "required": ["audio_url"],
+    "examples": [
+      {
+        "audio_url": "https://cdn.suedeai.xyz/example.mp3"
+      }
+    ]
+  }
+}

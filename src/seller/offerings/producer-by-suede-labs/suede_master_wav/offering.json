@@ -1,0 +1,47 @@
+{
+  "name": "suede_master_wav",
+  "description": "Suede Labs audio mastering for independent artists, producers, podcasters, content creators, sync coordinators, label QC teams, and agents shipping release-ready audio through automated AI music pipelines. Takes a mixed but unmastered audio file and returns a loudness-normalized, spectrally-balanced, and limited master suitable for streaming platforms, broadcast, sync delivery, or direct release. Supports release mastering for streaming targets, podcast loudness normalization to broadcast standards, sync deliverable prep, content-creator audio polish, batch mastering, and paid x402/ACP agent commerce.",
+  "jobFee": 0.25,
+  "jobFeeType": "fixed",
+  "slaMinutes": 4,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "audio_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public HTTP(S) URL of the mixed audio file to master. Supports wav, flac, aiff, and mp3 up to 15 minutes long. wav or flac strongly recommended for best results."
+      },
+      "target_loudness_lufs": {
+        "type": "number",
+        "minimum": -23,
+        "maximum": -6,
+        "default": -14,
+        "description": "Integrated loudness target in LUFS. Defaults to -14 LUFS (streaming standard). Use -16 for podcasts, -23 for EBU R128 broadcast, -9 for club masters."
+      },
+      "output_format": {
+        "type": "string",
+        "enum": ["wav", "flac", "mp3"],
+        "default": "wav",
+        "description": "Output container."
+      },
+      "preset": {
+        "type": "string",
+        "enum": ["neutral", "warm", "bright", "punchy", "vintage"],
+        "default": "neutral",
+        "description": "Tonal balance preset to apply during mastering."
+      }
+    },
+    "required": ["audio_url"],
+    "examples": [
+      {
+        "audio_url": "https://example.com/mix.wav",
+        "target_loudness_lufs": -14,
+        "output_format": "wav",
+        "preset": "neutral"
+      }
+    ]
+  }
+}
