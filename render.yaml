@@ -50,3 +50,35 @@ services:
         sync: false
       - key: VIDEO_UPLOAD_BASE_URL
         sync: false
+
+  - type: worker
+    name: virtuals-acp-agent-v2
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm run start:v2
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VIRTUALS_V2_AGENT_UUID
+        value: 019e3991-374d-75f3-a6b8-17ff309b4cd2
+      - key: VIRTUALS_V2_WALLET_EVM
+        value: "0x8b59efd371e8ceb523fefad53c4e941a4dd9bc07"
+      - key: VIRTUALS_V2_WALLET_SOL
+        value: GC45DbpqE58s1zXuUQf8ohaU32JYAgfGkzUJDzGHsu4i
+      - key: VIRTUALS_V2_BUILDER_CODE
+        value: bc_zw5d1a2s
+      - key: VIRTUALS_V2_PRIVY_WALLET_ID
+        value: k7e0j0xd5fbbd25dfhqslh26
+      - key: VIRTUALS_V2_SIGNER_PRIVATE_KEY
+        sync: false
+      - key: VIRTUALS_V2_COMPUTE_API_KEY
+        sync: false
+      - key: VIRTUALS_V2_COMPUTE_MODEL
+        value: anthropic/claude-haiku-4-5
+      - key: VIRTUALS_V2_COMPUTE_BASE_URL
+        value: https://compute.virtuals.io
+      - key: SUEDE_API_KEY
+        sync: false
+      - key: SUEDE_API_BASE_URL
+        value: https://app.suedeai.ai
