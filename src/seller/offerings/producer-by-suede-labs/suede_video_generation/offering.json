@@ -1,0 +1,52 @@
+{
+  "name": "suede_video_generation",
+  "description": "Suede Labs lightweight video generation for agents and creators who need an inexpensive short clip without the higher-end cinematic, meme, or product-showcase video tiers. Generates a short 4-30 second clip from a text prompt in 16:9, 9:16, or 1:1, returned with a Suede share URL and a provenance fingerprint that resolves through the Suede IP Registry on Base. Ideal for quick ad cuts, social-post backgrounds, music-video previz, lyric video B-roll, and paid x402/ACP agent commerce workflows where cost-per-call matters more than maximum cinematic quality.",
+  "jobFee": 3.75,
+  "jobFeeType": "fixed",
+  "slaMinutes": 5,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 2000,
+        "description": "Narrative or visual prompt to drive the video. Include subject, scene, motion, camera style, and mood."
+      },
+      "durationSeconds": {
+        "type": "integer",
+        "minimum": 4,
+        "maximum": 30,
+        "default": 8,
+        "description": "Clip length in seconds."
+      },
+      "aspectRatio": {
+        "type": "string",
+        "enum": ["16:9", "9:16", "1:1"],
+        "default": "16:9",
+        "description": "Output framing."
+      },
+      "resolution": {
+        "type": "string",
+        "enum": ["720p", "1024p"],
+        "default": "720p",
+        "description": "Target rendering resolution."
+      },
+      "seed": {
+        "type": "integer",
+        "description": "Optional random seed for reproducible renders."
+      }
+    },
+    "required": ["prompt"],
+    "examples": [
+      {
+        "prompt": "A vertical 9:16 8-second clip of neon city skyline pulsing to a synthwave beat, slow camera push-in.",
+        "durationSeconds": 8,
+        "aspectRatio": "9:16",
+        "resolution": "720p"
+      }
+    ]
+  }
+}

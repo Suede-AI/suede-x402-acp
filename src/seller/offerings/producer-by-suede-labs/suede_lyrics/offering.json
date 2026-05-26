@@ -1,0 +1,51 @@
+{
+  "name": "suede_lyrics",
+  "description": "Suede Labs lyrics generation for songwriters, topliners, producers, content creators, advertising creatives, game writers, and agents building songwriting-aware AI music pipelines. Generates structured, performable song lyrics from a prompt describing topic, mood, style, or reference artists, with proper sectional structure (verse, pre-chorus, chorus, bridge, outro), consistent rhyme schemes, and singable meter. Distinct from generic text generation: tuned for prosody, internal rhyme, line-length discipline, and section conventions that make lyrics actually fit a song. Built for paid x402/ACP agent commerce.",
+  "jobFee": 0.10,
+  "jobFeeType": "fixed",
+  "slaMinutes": 2,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "prompt": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 1000,
+        "description": "Free-text description of the song's topic, mood, perspective, reference style, or storyline."
+      },
+      "language": {
+        "type": "string",
+        "description": "Optional BCP-47 language tag for the generated lyrics (e.g. 'en', 'es', 'ja', 'pt-BR'). Defaults to English.",
+        "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+        "default": "en"
+      },
+      "structure": {
+        "type": "string",
+        "description": "Optional section structure as a dash-separated list. Defaults to 'verse-chorus-verse-chorus-bridge-chorus'.",
+        "default": "verse-chorus-verse-chorus-bridge-chorus"
+      },
+      "rhyme_scheme": {
+        "type": "string",
+        "enum": ["auto", "abab", "aabb", "abba", "free"],
+        "default": "auto",
+        "description": "Preferred rhyme scheme per section."
+      },
+      "explicit_allowed": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether explicit language is permitted in the generated lyrics."
+      }
+    },
+    "required": ["prompt"],
+    "examples": [
+      {
+        "prompt": "A late-night drive through a rainy city, missing someone, indie-pop in the style of warm 2010s alternative.",
+        "language": "en",
+        "structure": "verse-chorus-verse-chorus-bridge-chorus",
+        "rhyme_scheme": "abab"
+      }
+    ]
+  }
+}
