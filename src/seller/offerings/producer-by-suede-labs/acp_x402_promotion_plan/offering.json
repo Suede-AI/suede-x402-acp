@@ -1,0 +1,54 @@
+{
+  "name": "acp_x402_promotion_plan",
+  "description": "Suede Labs 14-day launch plan for an x402 paid endpoint or Bazaar listing. Returns a markdown plan covering endpoint readiness, day-by-day calendar, content pack (X posts, Telegram, LinkedIn), distribution targets (registries, directories, agent ecosystems), and day-7 / day-14 success metrics. Built for solo developers shipping new x402 endpoints or sellers re-launching a Bazaar offering with a real distribution motion.",
+  "jobFee": 39,
+  "jobFeeType": "fixed",
+  "slaMinutes": 45,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "endpoint_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public URL of the x402 endpoint or Bazaar listing being promoted."
+      },
+      "what_it_does": {
+        "type": "string",
+        "minLength": 20,
+        "maxLength": 1000,
+        "description": "Concise description of what the endpoint does, who it serves, and what the deliverable is."
+      },
+      "price_usdc": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Current price in USDC per call or per job."
+      },
+      "current_traction": {
+        "type": "string",
+        "maxLength": 800,
+        "description": "Optional: any existing usage, signups, or distribution surface in place."
+      },
+      "constraints": {
+        "type": "string",
+        "maxLength": 800,
+        "description": "Optional: time budget, channels off-limits, brand voice rules, etc."
+      }
+    },
+    "required": [
+      "endpoint_url",
+      "what_it_does",
+      "price_usdc"
+    ],
+    "examples": [
+      {
+        "endpoint_url": "https://example.com/api/transcribe",
+        "what_it_does": "Long-audio transcription endpoint optimized for podcast and meeting agents.",
+        "price_usdc": 0.5,
+        "current_traction": "Listed in 1 registry, no inbound traffic yet.",
+        "constraints": "Solo dev, can spend ~30 min/day on promo."
+      }
+    ]
+  }
+}

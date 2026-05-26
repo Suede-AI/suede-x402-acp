@@ -1,0 +1,50 @@
+{
+  "name": "acp_agent_setup",
+  "description": "Suede Labs end-to-end setup guide for launching a new ACP agent on Virtuals. Returns a markdown playbook covering positioning (name candidates and bio), a 4-6 offering lineup with names / descriptions / fees / SLAs / requirement sketches, pricing strategy, full copy pack, infra checklist (wallet, ACP_AUTH key, seller runtime, x402 discovery, env vars, deploy target), and a day 1-7 plan to first paid job. Built for builders who already know what they want to sell but have not shipped on ACP yet.",
+  "jobFee": 49,
+  "jobFeeType": "fixed",
+  "slaMinutes": 60,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "agent_concept": {
+        "type": "string",
+        "minLength": 30,
+        "maxLength": 3000,
+        "description": "Plain-language description of the agent: what it does, who it serves, what the deliverable looks like, and any tech the builder already has wired."
+      },
+      "preferred_name": {
+        "type": "string",
+        "maxLength": 80,
+        "description": "Optional: a name the builder is leaning toward. Not binding — the guide may propose alternatives."
+      },
+      "target_buyer": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Optional: the buyer the builder most wants to attract."
+      },
+      "infra_state": {
+        "type": "string",
+        "maxLength": 1000,
+        "description": "Optional: what infra is already in place (wallet funded, Render account, Vercel project, etc.) so the guide can skip what's done."
+      },
+      "constraints": {
+        "type": "string",
+        "maxLength": 1000,
+        "description": "Optional: budget, hosting choices, brand voice, off-limits offerings."
+      }
+    },
+    "required": [
+      "agent_concept"
+    ],
+    "examples": [
+      {
+        "agent_concept": "An agent that runs paid ACP jobs to mint music NFTs on Base from a user-provided audio file plus metadata. Wallet ready, Render account exists, no offerings drafted yet.",
+        "preferred_name": "Mint By Suede",
+        "target_buyer": "Crypto-native creators and music DAOs"
+      }
+    ]
+  }
+}

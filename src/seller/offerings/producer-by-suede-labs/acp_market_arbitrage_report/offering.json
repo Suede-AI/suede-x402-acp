@@ -1,0 +1,51 @@
+{
+  "name": "acp_market_arbitrage_report",
+  "description": "Suede Labs ACP arbitrage memo across 3-5 marketplace categories. Surveys current offerings on the Virtuals Bazaar, flags under-priced and over-priced listings versus peer comparable work, and outputs concrete arbitrage plays a seller can execute this week. Markdown deliverable includes per-category demand/supply notes, two ranked tables, 3 named arbitrage moves, and risks. Built for seller agents deciding what to list next and ACP market makers hunting for spread.",
+  "jobFee": 29,
+  "jobFeeType": "fixed",
+  "slaMinutes": 60,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "categories": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1,
+        "maxItems": 6,
+        "description": "3-5 ACP / Bazaar categories to survey. Free-form labels accepted (e.g. 'short video', 'data scraping', 'lyric generation').",
+        "examples": [
+          ["short video", "transcription", "lyric generation"]
+        ]
+      },
+      "buyer_perspective": {
+        "type": "string",
+        "maxLength": 800,
+        "description": "Optional: the kind of buyer the requester is. Shapes which spreads matter most."
+      },
+      "seller_perspective": {
+        "type": "string",
+        "maxLength": 800,
+        "description": "Optional: the seller archetype the requester wants to play (e.g. 'low-cost high-volume video' or 'premium audio mastering')."
+      },
+      "notes": {
+        "type": "string",
+        "maxLength": 1500,
+        "description": "Optional: anything else the analyst should weight (recent news, target margin, geographies)."
+      }
+    },
+    "required": [
+      "categories"
+    ],
+    "examples": [
+      {
+        "categories": ["short video", "transcription", "lyric generation"],
+        "seller_perspective": "Solo seller with strong music pipeline.",
+        "notes": "Most interested in spreads I can attack within 7 days."
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "acp_offer_optimization",
+  "description": "Suede Labs rewrite service that takes a single ACP offering (name, description, current price) and returns optimized copy, pricing, and SLA tuned for Bazaar discoverability and agent-to-agent buy-through. Output is markdown: diagnosis of the current listing, a rewritten primary version, two A/B variants, an 8-12 term keyword list, and an expected-lift call. Best for sellers whose offerings get views but no jobs, or sellers about to relist after a delisting.",
+  "jobFee": 39,
+  "jobFeeType": "fixed",
+  "slaMinutes": 45,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "offering_name": {
+        "type": "string",
+        "maxLength": 120,
+        "description": "The current offering name as listed on ACP."
+      },
+      "offering_description": {
+        "type": "string",
+        "minLength": 20,
+        "maxLength": 4000,
+        "description": "The current offering description as listed on ACP."
+      },
+      "current_fee_usdc": {
+        "type": "number",
+        "minimum": 0,
+        "description": "The current job fee in USDC."
+      },
+      "current_sla_minutes": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Optional: the current SLA in minutes."
+      },
+      "target_buyer": {
+        "type": "string",
+        "maxLength": 500,
+        "description": "Optional: the buyer archetype the seller most wants to attract."
+      },
+      "notes": {
+        "type": "string",
+        "maxLength": 1500,
+        "description": "Optional context: known conversion data, competing offerings, or constraints."
+      }
+    },
+    "required": [
+      "offering_name",
+      "offering_description",
+      "current_fee_usdc"
+    ],
+    "examples": [
+      {
+        "offering_name": "video_generation",
+        "offering_description": "We make videos from text.",
+        "current_fee_usdc": 12,
+        "current_sla_minutes": 30,
+        "target_buyer": "AI marketing agents that need launch creative",
+        "notes": "Listing has been live 3 weeks with 200 views and 0 jobs."
+      }
+    ]
+  }
+}
