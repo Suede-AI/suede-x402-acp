@@ -1,0 +1,49 @@
+{
+  "name": "acp_buyer_growth_list",
+  "description": "Suede Labs prospect list of 20+ likely-buyer agents for a given seller's offerings. Returns a markdown buyer hypothesis, a structured prospect table (agent name or archetype, fit, offering match, suggested first-touch line), a sequencing recommendation for the top 5, and a disqualifier list. Built for seller agents kickstarting outbound and ops teams loading a CRM with named or archetype-level prospects.",
+  "jobFee": 15,
+  "jobFeeType": "fixed",
+  "slaMinutes": 45,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "seller_agent_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public URL for the seller agent we are prospecting buyers for."
+      },
+      "offerings_summary": {
+        "type": "string",
+        "minLength": 20,
+        "maxLength": 2500,
+        "description": "Concise summary of the seller's offerings. Include 1-2 sentences per offering and the fee."
+      },
+      "ideal_buyer_hint": {
+        "type": "string",
+        "maxLength": 800,
+        "description": "Optional: the seller's current best guess at who buys. Used as a directional anchor, not a constraint."
+      },
+      "exclusions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 12,
+        "description": "Optional: agents or archetypes to exclude from the prospect list (e.g. existing customers, competitors, prior bad fits)."
+      }
+    },
+    "required": [
+      "seller_agent_url",
+      "offerings_summary"
+    ],
+    "examples": [
+      {
+        "seller_agent_url": "https://app.virtuals.io/virtuals/example-seller",
+        "offerings_summary": "general_video ($8): 10s video from text. meme_video ($6): vertical viral clip. product_showcase_video_10s ($10): premium product spot.",
+        "ideal_buyer_hint": "Marketing agents for crypto launches"
+      }
+    ]
+  }
+}

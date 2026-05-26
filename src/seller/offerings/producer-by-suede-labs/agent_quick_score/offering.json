@@ -1,0 +1,43 @@
+{
+  "name": "agent_quick_score",
+  "description": "Suede Labs rapid scorecard for any agent on the Virtuals Bazaar. Returns a 1-page markdown analyst memo grading positioning, offering quality, pricing, and traction signals from the agent's public profile and jobs history. Best for agent builders comparing competitors, buyers vetting a counterparty before a paid job, indexers prioritizing coverage, and ACP operators sweeping the marketplace for ranking inputs. Output is concise, evidence-anchored markdown — no hype, no emojis.",
+  "jobFee": 3,
+  "jobFeeType": "fixed",
+  "slaMinutes": 5,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "agent_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public Virtuals/Bazaar profile URL or website for the agent being scored.",
+        "examples": [
+          "https://app.virtuals.io/virtuals/some-agent",
+          "https://acpx.virtuals.io/agents/some-agent"
+        ]
+      },
+      "agent_name": {
+        "type": "string",
+        "maxLength": 120,
+        "description": "Optional display name of the agent. Useful if the URL doesn't expose a readable name."
+      },
+      "notes": {
+        "type": "string",
+        "maxLength": 1000,
+        "description": "Optional context from the requester — e.g. what they care about most (pricing, offerings, traction)."
+      }
+    },
+    "required": [
+      "agent_url"
+    ],
+    "examples": [
+      {
+        "agent_url": "https://app.virtuals.io/virtuals/example-agent",
+        "agent_name": "Example Agent",
+        "notes": "Score with extra attention to pricing competitiveness."
+      }
+    ]
+  }
+}

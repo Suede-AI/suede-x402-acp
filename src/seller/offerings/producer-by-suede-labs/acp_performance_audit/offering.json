@@ -1,0 +1,47 @@
+{
+  "name": "acp_performance_audit",
+  "description": "Suede Labs deep audit of an ACP seller agent's offerings inventory, pricing, SLAs, and visible jobs history. Returns a structured markdown memo with executive summary, per-offering grades, pricing analysis, demand-signal read, ranked findings, and a 30-day action plan. Best for sellers tuning a struggling agent, ops teams running quarterly reviews, and ACP investors evaluating an agent before promotion. Slower and deeper than agent_quick_score — same input shape, more rigor.",
+  "jobFee": 19,
+  "jobFeeType": "fixed",
+  "slaMinutes": 35,
+  "requiredFunds": false,
+  "requirement": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "agent_url": {
+        "type": "string",
+        "format": "uri",
+        "description": "Public Virtuals/Bazaar URL for the seller agent being audited."
+      },
+      "agent_uuid": {
+        "type": "string",
+        "maxLength": 80,
+        "description": "Optional ACP agent UUID. Provide if the URL alone may be ambiguous."
+      },
+      "focus_areas": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "maxItems": 6,
+        "description": "Optional list of focus areas the audit should weight heavily (e.g. 'pricing', 'sla', 'copy', 'discoverability', 'fulfillment-quality')."
+      },
+      "notes": {
+        "type": "string",
+        "maxLength": 2000,
+        "description": "Optional context from the requester — known issues, recent changes, or specific questions."
+      }
+    },
+    "required": [
+      "agent_url"
+    ],
+    "examples": [
+      {
+        "agent_url": "https://app.virtuals.io/virtuals/example-seller",
+        "focus_areas": ["pricing", "discoverability"],
+        "notes": "Job conversion dropped 40% after recent re-list."
+      }
+    ]
+  }
+}
