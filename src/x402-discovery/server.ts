@@ -27,6 +27,35 @@ const MIME_TYPES: Record<string, string> = {
   ".yml": "application/yaml; charset=utf-8",
 };
 
+// Origins allowed to read payment-resource routes (/x402/*) cross-origin from
+// a browser context. Non-browser agent calls (server-to-server, no Origin
+// header) are unaffected — CORS only governs browser-resident scripts.
+//
+// Default is empty: browsers cannot scrape live `payTo` / `amountMicros` from
+// 402 responses. Add known agent-framework web origins here when needed.
+const ALLOWED_X402_ORIGINS = new Set<string>([]);
+
+function isPaymentResource(pathname: string): boolean {
+  return pathname.startsWith("/x402/");
+}
+
+function resolveCorsOrigin(
+  pathname: string,
+  originHeader: string | undefined
+): string | null {
+  // Manifest/discovery routes stay open to wildcard so indexers can read them.
+  if (!isPaymentResource(pathname)) {
+    return "*";
+  }
+  // Payment-resource routes: allowlist-only for browser cross-origin reads.
+  // Requests without an Origin header (typical server-to-server agents) get
+  // no CORS header at all — they don't need one.
+  if (!originHeader) {
+    return null;
+  }
+  return ALLOWED_X402_ORIGINS.has(originHeader) ? originHeader : null;
+}
+
 const offerings = [
   {
     id: "general_video",
@@ -90,31 +119,56 @@ function etag(body: string): string {
   return `"${createHash("sha256").update(body).digest("hex").slice(0, 16)}"`;
 }
 
+interface RequestContext {
+  pathname: string;
+  origin: string | undefined;
+}
+
+function buildHeaders(
+  ctx: RequestContext,
+  contentType: string,
+  body: string,
+  extraHeaders: Record<string, string>
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": contentType,
+    "Cache-Control": "public, max-age=300",
+    ETag: etag(body),
+    ...extraHeaders,
+  };
+  const corsOrigin = resolveCorsOrigin(ctx.pathname, ctx.origin);
+  if (corsOrigin !== null) {
+    headers["Access-Control-Allow-Origin"] = corsOrigin;
+    if (corsOrigin !== "*") {
+      // Required so caches/proxies don't serve the wrong origin to other callers.
+      headers["Vary"] = "Origin";
+    }
+  }
+  return headers;
+}
+
 function send(
   res: ServerResponse,
+  ctx: RequestContext,
   status: number,
   body: string,
   contentType = "text/plain; charset=utf-8",
   extraHeaders: Record<string, string> = {}
 ): void {
-  res.writeHead(status, {
-    "Content-Type": contentType,
-    "Cache-Control": "public, max-age=300",
-    ETag: etag(body),
-    "Access-Control-Allow-Origin": "*",
-    ...extraHeaders,
-  });
+  res.writeHead(status, buildHeaders(ctx, contentType, body, extraHeaders));
   res.end(body);
 }
 
 function sendJson(
   res: ServerResponse,
+  ctx: RequestContext,
   status: number,
   body: JsonRecord,
   extraHeaders: Record<string, string> = {}
 ): void {
   send(
     res,
+    ctx,
     status,
     JSON.stringify(body, null, 2),
     "application/json; charset=utf-8",
@@ -122,8 +176,8 @@ function sendJson(
   );
 }
 
-function notFound(res: ServerResponse): void {
-  sendJson(res, 404, { error: "not_found" });
+function notFound(res: ServerResponse, ctx: RequestContext): void {
+  sendJson(res, ctx, 404, { error: "not_found" });
 }
 
 function loadDiscoveryFile(path: string): {
@@ -391,57 +445,60 @@ function unifiedDiscovery(): JsonRecord {
 
 function handle(req: IncomingMessage, res: ServerResponse): void {
   const url = new URL(req.url || "/", PUBLIC_BASE_URL);
+  const originHeader = req.headers.origin;
+  const origin = Array.isArray(originHeader) ? originHeader[0] : originHeader;
+  const ctx: RequestContext = { pathname: url.pathname, origin };
 
   if (req.method === "OPTIONS") {
-    send(res, 204, "");
+    send(res, ctx, 204, "");
     return;
   }
 
   if (url.pathname === "/") {
-    send(res, 200, home(), "text/html; charset=utf-8");
+    send(res, ctx, 200, home(), "text/html; charset=utf-8");
     return;
   }
 
   if (url.pathname === "/llms.txt") {
     const file = loadDiscoveryFile("llms.txt");
-    send(res, 200, file.body, file.contentType);
+    send(res, ctx, 200, file.body, file.contentType);
     return;
   }
 
   if (url.pathname === "/openapi.json") {
-    sendJson(res, 200, openapi());
+    sendJson(res, ctx, 200, openapi());
     return;
   }
 
   if (url.pathname === "/discovery") {
-    sendJson(res, 200, unifiedDiscovery());
+    sendJson(res, ctx, 200, unifiedDiscovery());
     return;
   }
 
   if (url.pathname === "/.well-known/agent-card.json") {
-    sendJson(res, 200, agentCard());
+    sendJson(res, ctx, 200, agentCard());
     return;
   }
 
   if (url.pathname === "/.well-known/agent.yml") {
     const file = loadDiscoveryFile("discovery/.well-known/agent.yml");
-    send(res, 200, file.body, file.contentType);
+    send(res, ctx, 200, file.body, file.contentType);
     return;
   }
 
   if (url.pathname === "/.well-known/x402.json") {
-    sendJson(res, 200, x402Manifest());
+    sendJson(res, ctx, 200, x402Manifest());
     return;
   }
 
   if (url.pathname === "/.well-known/the402.json") {
-    sendJson(res, 200, the402Manifest());
+    sendJson(res, ctx, 200, the402Manifest());
     return;
   }
 
   if (offerings.some((item) => item.route === url.pathname)) {
     if (!X402_PAY_TO) {
-      sendJson(res, 503, paymentConfigMissing(url.pathname), {
+      sendJson(res, ctx, 503, paymentConfigMissing(url.pathname), {
         "Retry-After": "300",
       });
       return;
@@ -452,11 +509,11 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
     const encoded = Buffer.from(JSON.stringify(paymentRequired)).toString(
       "base64"
     );
-    sendJson(res, 402, body, { "PAYMENT-REQUIRED": encoded });
+    sendJson(res, ctx, 402, body, { "PAYMENT-REQUIRED": encoded });
     return;
   }
 
-  notFound(res);
+  notFound(res, ctx);
 }
 
 createServer(handle).listen(PORT, () => {
