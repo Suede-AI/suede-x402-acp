@@ -9,7 +9,7 @@ This document is the source of truth for "where does payment for X actually sett
 | Service | Address | Env var | Why this address |
 |---|---|---|---|
 | Suede-AI-App (media generation) | `0xb5a05466712fd5bcdf2883f43cC6B1799428032d` | `X402_SELLER_WALLET_ADDRESS` | Per-call USDC for music and video generation, audio analysis, and Suede Registry lookups. Also surfaced on the live `402` challenge for `/agent/generate`, `/create-music`, `/agent/video`, `/v1/rights/*`, `/v1/analyze`. |
-| Suede-AI-App (credit purchase fallback) | `0x0e3557e4f662f9bca497611b60c95330de747a7d` | frontend credits-route fallback | Credit-package purchases via `/api/payments/x402/credits`. Kept separate from per-call revenue so credit prepayment and per-call settlement can be reconciled independently. |
+| Suede-AI-App (credits recipient) | `0x0e3557e4f662f9bca497611b60c95330de747a7d` | `NEXT_PUBLIC_BASE_PAY_RECIPIENT` | Credit-package purchases via `/api/payments/x402/credits`. Kept separate from per-call revenue so credit prepayment and per-call settlement can be reconciled independently. This is the canonical credits recipient — not a backup or failover; the env var is currently unset in production and the code resolves to a hardcoded literal of this same address, which is a follow-up to harden. |
 | Strumly | `0xb5a05466712fd5bcdf2883f43cC6B1799428032d` | `STRUMLY_USDC_RECEIVER_ADDRESS` | Per-call USDC for Strumly's five paid endpoints and day-pass purchase. Settles to the same address as Suede-AI-App media generation by design — see "Treasury consolidation" below. |
 | Producer by Suede Labs | Derived from `VIRTUALS_V2_SIGNER_PRIVATE_KEY` | `VIRTUALS_V2_SIGNER_PRIVATE_KEY` plus `X402_PAY_TO` for the discovery hub | Virtuals ACP v2 escrow releases settle to the agent wallet derived from the signer key. The discovery hub publishes `X402_PAY_TO` for advertised x402 metadata, kept separately so the on-chain ACP identity and the off-chain x402 advertised address can be rotated independently. |
 | Suede Artist Agent | Not yet assigned | n/a | Design phase. Per-artist agent identity is expected to derive from an artist-scoped wallet so the artist's representation surface remains attributable to that artist on-chain. |
@@ -20,7 +20,7 @@ This document is the source of truth for "where does payment for X actually sett
 
 - **Rail:** x402 HTTP with EIP-3009 transferWithAuthorization on USDC, Base mainnet (`eip155:8453`).
 - **Facilitator:** Coinbase CDP, `https://api.cdp.coinbase.com/platform/v2/x402`.
-- **Recipient:** `X402_SELLER_WALLET_ADDRESS`. The frontend credits-route fallback (`0x0e3557e4f662f9bca497611b60c95330de747a7d`) is used only for credit-package purchases via `/api/payments/x402/credits`.
+- **Recipient:** `X402_SELLER_WALLET_ADDRESS` for per-call media generation. The credits recipient (`NEXT_PUBLIC_BASE_PAY_RECIPIENT`, currently `0x0e3557e4f662f9bca497611b60c95330de747a7d`) handles credit-package purchases via `/api/payments/x402/credits`.
 - **Where the money ends up:** USDC lands at the recipient address on Base. From there, treasury sweeps move it into Suede's consolidated holdings off-chain.
 
 ### Strumly
@@ -81,7 +81,7 @@ For quick reference, the canonical addresses currently in use:
 
 ```text
 Suede-AI-App media generation : 0xb5a05466712fd5bcdf2883f43cC6B1799428032d
-Suede-AI-App credits fallback : 0x0e3557e4f662f9bca497611b60c95330de747a7d
+Suede-AI-App credits recipient : 0x0e3557e4f662f9bca497611b60c95330de747a7d
 Strumly                       : 0xb5a05466712fd5bcdf2883f43cC6B1799428032d
 Producer by Suede Labs        : derived from VIRTUALS_V2_SIGNER_PRIVATE_KEY
 Suede Artist Agent            : not yet assigned
