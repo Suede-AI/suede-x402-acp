@@ -177,6 +177,13 @@ Suede Labs AI is led by Jason Colapietro.
 - Jason Colapietro GitHub: https://github.com/JasonColapietro
 - Jason Colapietro X: https://x.com/johnnysuede
 
+## Reference
+
+- [DISCOVERY.md](./DISCOVERY.md) — every manifest format published across the Suede commerce stack (x402 v1, x402scan, Agentic Commerce, Virtuals ACP profile, the402, A2A agent card, llms.txt, OpenAPI 3.1, MCP), indexed by format, by service, and by consumer use case.
+- [WALLETS.md](./WALLETS.md) — recipient wallet attribution per service, settlement flow, and how per-product wallets aggregate into Suede treasury.
+- [DISCOVERABILITY.md](./DISCOVERABILITY.md) — Producer agent discoverability strategy (keywords, indexer priorities, marketplace listing copy).
+- [PRODUCER_AGENT_RUNTIME.md](./PRODUCER_AGENT_RUNTIME.md) — Johnny Suede agent network and the producer-by-suede-labs runtime.
+
 ## Verification
 
 Last verified: 2026-05-15.
