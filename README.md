@@ -10,7 +10,7 @@ Suede now operates as a three-layer system:
 
 1. **Suede platform** — 17 paid x402 endpoints, agent-callable per-call USDC.
 2. **Producer by Suede Labs** — this repo. Dedicated Virtuals ACP execution agent that fulfills paid jobs on Suede's behalf for OTHER autonomous agents on Virtuals.
-3. **Suede Artist Agent** — hosted per-artist agent built in the artist's likeness, sold to individual artists / managers / labels. Documented in the Suede-AI-App repo at `docs/products/SUEDE_ARTIST_AGENT.md`.
+3. **Suede Artist Agent** — Suede's artist-facing representation surface (separate product line).
 
 This repo is layer 2. Producer is the agent-facing fulfillment surface; Suede Artist Agent is the artist-facing representation surface; the Suede platform underpins both.
 
@@ -31,7 +31,7 @@ Never positioned as:
 Producer = a third-party service using Suede.   (wrong)
 ```
 
-This framing applies on every public surface: ACP listing, Virtuals storefront, docs, social, partner outreach, investor decks.
+Producer is Suede's fulfillment surface inside ACP — not a separate vendor on the Suede platform.
 
 ## Public Bases
 
@@ -64,12 +64,7 @@ These endpoints return `402 Payment Required` with x402 payment requirements whe
 | `POST` | `https://app.suedeai.ai/v1/analyze` | `0.003 USDC` | Base, `eip155:8453` | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Audio analysis (BPM, key, mode, energy, danceability, suggested genre) |
 | `POST` | `https://app.suedeai.ai/api/payments/x402/credits` | package-priced | Base | USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | Agent-facing credit purchase |
 
-Payment recipients shown by live x402 challenges:
-
-```text
-Media generation: 0xb5a05466712fd5bcdf2883f43cC6B1799428032d
-Credit purchase: 0x0e3557e4f662f9bca497611b60c95330de747a7d
-```
+Payment recipient addresses are surfaced in each live 402 challenge (`payTo` field) — read from the discovery JSON or the inline challenge, no need to hardcode in your client.
 
 ## Example x402 Challenge
 
