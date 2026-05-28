@@ -129,7 +129,7 @@ Producer is Suede's dedicated Virtuals ACP execution agent. Discovery surface (i
 - `discovery/mcp-server.json` — MCP registry metadata
 - `llms.txt` — LLM-readable summary
 
-Pricing: 28 ACP offerings, $0.01 → $49, fixed USDC fee per job. The pricing carries a roughly 2.5×–3× markup over the equivalent Suede-AI-App x402 endpoint; the spread covers the Virtuals marketplace tax and the agent's execution margin.
+Pricing: 27 ACP offerings, $0.01 → $49, fixed USDC fee per job. The pricing carries a roughly 2.5×–3× markup over the equivalent Suede-AI-App x402 endpoint; the spread covers the Virtuals marketplace tax and the agent's execution margin.
 
 Payment rail: Virtuals ACP v2 on-chain escrow (USDC on Base). Funds settle on job completion via the on-chain escrow rather than per-call HTTP 402.
 

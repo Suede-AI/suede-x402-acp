@@ -22,6 +22,24 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL ?? "gpt-4o";
 const OPENAI_API_BASE = (process.env.OPENAI_API_BASE_URL ?? "https://api.openai.com").replace(/\/+$/, "");
 
+/** Hard per-request timeout — generous for the largest template, but bounds a hung connection. */
+const CONSULTING_TIMEOUT_MS = 180_000;
+
+/** fetch() with an AbortController deadline; the timer is always cleared. */
+async function fetchWithTimeout(
+  url: string,
+  opts: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: ac.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Per-service prompt configuration. */
 interface PromptTemplate {
   /** System prompt — sets the analyst persona and output contract. */
@@ -256,18 +274,26 @@ export async function runConsultingAnalysis(
     max_tokens: template.maxTokens ?? 2500,
   };
 
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
+  const resp = await fetchWithTimeout(
+    url,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  });
+    CONSULTING_TIMEOUT_MS,
+  );
 
   if (!resp.ok) {
+    // SECURITY: providers (e.g. OpenAI) can echo the caller's Bearer token in
+    // error bodies. This message is surfaced to the buyer via deliverJobFailure,
+    // so log the body server-side only and throw a status-only message.
     const text = await resp.text();
-    throw new Error(`Consulting analysis failed (${resp.status}): ${text}`);
+    console.error("[acp-consulting-client] upstream error", resp.status, text.slice(0, 200));
+    throw new Error(`Consulting upstream failed: HTTP ${resp.status}`);
   }
 
   const data = await resp.json();

@@ -5,80 +5,19 @@
 // =============================================================================
 import { register } from "../dispatch.js";
 import { generateVideo, type GenerateVideoOpts } from "../clients/video-client.js";
+import {
+  optionalString,
+  optionalStringArray,
+  optionalEnum,
+  optionalBoolean,
+  requireImageRef,
+} from "./_video-lib.js";
 
 const SCHEMA_VERSION = "v2-video-1";
 const SERVICE_NAME = "product_showcase_video";
 
 const DEFAULT_PRODUCT_PROMPT =
   "Cinematic product showcase with smooth camera movement and professional lighting";
-
-function optionalString(
-  req: Record<string, unknown>,
-  field: string
-): string | undefined {
-  const v = req[field];
-  if (v === undefined || v === null) return undefined;
-  if (typeof v !== "string") {
-    throw new Error(`Field ${field} must be a string`);
-  }
-  const trimmed = v.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function optionalStringArray(
-  req: Record<string, unknown>,
-  field: string
-): string[] | undefined {
-  const v = req[field];
-  if (v === undefined || v === null) return undefined;
-  if (!Array.isArray(v)) {
-    throw new Error(`Field ${field} must be an array of strings`);
-  }
-  const cleaned = v.filter(
-    (s): s is string => typeof s === "string" && s.trim().length > 0
-  );
-  return cleaned.length > 0 ? cleaned : undefined;
-}
-
-function optionalEnum<T extends string>(
-  req: Record<string, unknown>,
-  field: string,
-  allowed: readonly T[]
-): T | undefined {
-  const v = req[field];
-  if (v === undefined || v === null) return undefined;
-  if (typeof v !== "string" || !allowed.includes(v as T)) {
-    throw new Error(
-      `Field ${field} must be one of: ${allowed.join(", ")}`
-    );
-  }
-  return v as T;
-}
-
-function optionalBoolean(
-  req: Record<string, unknown>,
-  field: string
-): boolean | undefined {
-  const v = req[field];
-  if (v === undefined || v === null) return undefined;
-  if (typeof v !== "boolean") {
-    throw new Error(`Field ${field} must be a boolean`);
-  }
-  return v;
-}
-
-function requireImageRef(
-  req: Record<string, unknown>
-): { image_url?: string; image_urls?: string[] } {
-  const single = optionalString(req, "image_url");
-  const multi = optionalStringArray(req, "image_urls");
-  if (!single && (!multi || multi.length === 0)) {
-    throw new Error(
-      "At least one of image_url or image_urls is required for product_showcase variants"
-    );
-  }
-  return { image_url: single, image_urls: multi };
-}
 
 register(SERVICE_NAME, async (req) => {
   const images = requireImageRef(req);

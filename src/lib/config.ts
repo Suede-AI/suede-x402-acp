@@ -32,7 +32,6 @@ export interface AgentV2Entry {
   computeApiKey: string;
   privyAppId: string | null;
   privyWalletId: string | null;
-  signerPrivateKey: string | null;
   active: boolean;
 }
 
@@ -67,7 +66,24 @@ export function readConfig(): ConfigJson {
   }
   try {
     const content = fs.readFileSync(CONFIG_JSON_PATH, "utf-8");
-    return JSON.parse(content);
+    const parsed = JSON.parse(content) as ConfigJson & {
+      agentsV2?: Array<AgentV2Entry & { signerPrivateKey?: unknown }>;
+    };
+    // Defense-in-depth: a signer private key must NEVER live in config.json —
+    // it is read from env only (see runtime-v2/agent.ts). If an older config or
+    // a manual edit left one here, strip it and rewrite the file so it cannot
+    // be committed or exported.
+    if (parsed.agentsV2?.some((e) => e && "signerPrivateKey" in e)) {
+      parsed.agentsV2 = parsed.agentsV2.map((e) => {
+        if (e && "signerPrivateKey" in e) {
+          const { signerPrivateKey: _removed, ...rest } = e;
+          return rest as AgentV2Entry;
+        }
+        return e;
+      });
+      writeConfig(parsed);
+    }
+    return parsed;
   } catch {
     return {};
   }

@@ -28,6 +28,68 @@ function requireEnv(value: string, name: string): string {
     return value;
 }
 
+/** Hard per-request timeouts so a hung upstream cannot block the job coroutine forever. */
+const CREATE_TIMEOUT_MS = 30_000;
+const POLL_TIMEOUT_MS = 15_000;
+const UPLOAD_TIMEOUT_MS = 30_000;
+
+/** fetch() with an AbortController deadline; the timer is always cleared. */
+async function fetchWithTimeout(
+    url: string,
+    opts: RequestInit,
+    timeoutMs: number,
+): Promise<Response> {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), timeoutMs);
+    try {
+        return await fetch(url, { ...opts, signal: ac.signal });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+/**
+ * Reject buyer-supplied reference URLs that point at private, loopback, link-local,
+ * or cloud-metadata hosts before they are forwarded to the upstream uploader.
+ * Prevents a buyer from using the authenticated upload endpoint as an SSRF probe.
+ * The message intentionally does not echo the URL back to the caller.
+ */
+function assertSafeImageUrl(url: string): void {
+    let parsed: URL;
+    try {
+        parsed = new URL(url);
+    } catch {
+        throw new Error("Invalid image URL");
+    }
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        throw new Error("Image URL must use http or https");
+    }
+    const host = parsed.hostname.toLowerCase();
+    // IPv6 literals arrive without brackets and always contain a colon; the
+    // ULA/link-local prefix checks below must only apply to those, never to
+    // ordinary hostnames (so "fcbarcelona.com" / "fd-cdn.example.com" are fine).
+    const isIPv6 = host.includes(":");
+    const blocked =
+        host === "localhost" ||
+        host.endsWith(".localhost") ||
+        host.endsWith(".internal") ||
+        host === "0.0.0.0" ||
+        host === "169.254.169.254" || // cloud instance metadata
+        /^127\./.test(host) ||
+        /^10\./.test(host) ||
+        /^192\.168\./.test(host) ||
+        /^169\.254\./.test(host) ||
+        /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host) ||
+        (isIPv6 &&
+            (host === "::1" ||
+                host.startsWith("fc") ||
+                host.startsWith("fd") ||
+                host.startsWith("fe80")));
+    if (blocked) {
+        throw new Error("Image URL host is not allowed");
+    }
+}
+
 function headers(idempotencyKey?: string): Record<string, string> {
     const h: Record<string, string> = {
         Authorization: `Bearer ${requireEnv(VIDEO_API_KEY, "VIDEO_API_KEY")}`,
@@ -56,20 +118,30 @@ export async function createTask(opts: VideoCreateOptions): Promise<string> {
         },
     };
 
-    const resp = await fetch(`${apiBase}/api/v1/jobs/createTask`, {
-        method: "POST",
-        headers: requestHeaders,
-        body: JSON.stringify(payload),
-    });
+    const resp = await fetchWithTimeout(
+        `${apiBase}/api/v1/jobs/createTask`,
+        {
+            method: "POST",
+            headers: requestHeaders,
+            body: JSON.stringify(payload),
+        },
+        CREATE_TIMEOUT_MS,
+    );
 
     if (!resp.ok) {
+        // SECURITY: some upstream APIs echo the Authorization (Bearer) value in
+        // error bodies. This message is forwarded to the ACP buyer via
+        // deliverJobFailure, so log the body server-side only and throw a
+        // status-only message.
         const text = await resp.text();
-        throw new Error(`Video create failed (${resp.status}): ${text}`);
+        console.error("[video-client] createTask upstream error", resp.status, text.slice(0, 200));
+        throw new Error(`Video create failed: HTTP ${resp.status}`);
     }
 
     const data = await resp.json();
     if (data.code !== undefined && data.code !== 200) {
-        throw new Error(`Video create failed: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
+        console.error("[video-client] createTask non-200 body", data);
+        throw new Error(`Video create failed: upstream code ${data.code}`);
     }
 
     const taskId = data?.data?.taskId ?? data?.data?.task_id ?? data?.taskId ?? "";
@@ -104,15 +176,29 @@ export async function pollTask(
     const requestHeaders = headers();
     const apiBase = requireEnv(VIDEO_API_BASE, "VIDEO_API_BASE_URL");
     for (let i = 0; i < maxAttempts; i++) {
-        const resp = await fetch(
-            `${apiBase}/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
-            { headers: requestHeaders },
-        );
+        let resp: Response;
+        try {
+            resp = await fetchWithTimeout(
+                `${apiBase}/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
+                { headers: requestHeaders },
+                POLL_TIMEOUT_MS,
+            );
+        } catch (err) {
+            // A single slow/timed-out poll is transient — retry on the next tick
+            // rather than failing the whole job. The maxAttempts ceiling bounds it.
+            console.warn(
+                "[video-client] poll request failed, retrying",
+                err instanceof Error ? err.message : err,
+            );
+            await new Promise((r) => setTimeout(r, intervalMs));
+            continue;
+        }
 
         if (resp.ok) {
             const data = await resp.json();
             if (data.code !== undefined && data.code !== 200) {
-                throw new Error(`Video poll error: ${data.message ?? data.msg ?? JSON.stringify(data)}`);
+                console.error("[video-client] poll non-200 body", data);
+                throw new Error(`Video poll error: upstream code ${data.code}`);
             }
 
             const statusData = (typeof data.data === "object" && data.data) ? data.data : {};
@@ -136,28 +222,35 @@ export async function pollTask(
 }
 
 export async function uploadFileByUrl(fileUrl: string): Promise<string> {
+    assertSafeImageUrl(fileUrl);
     const requestHeaders = headers();
     const uploadBase = requireEnv(VIDEO_UPLOAD_BASE, "VIDEO_UPLOAD_BASE_URL");
-    const resp = await fetch(`${uploadBase}/api/file-url-upload`, {
-        method: "POST",
-        headers: {
-            Authorization: requestHeaders.Authorization,
-            "Content-Type": "application/json",
+    const resp = await fetchWithTimeout(
+        `${uploadBase}/api/file-url-upload`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: requestHeaders.Authorization,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                fileUrl,
+                uploadPath: "acp-uploads",
+            }),
         },
-        body: JSON.stringify({
-            fileUrl,
-            uploadPath: "acp-uploads",
-        }),
-    });
+        UPLOAD_TIMEOUT_MS,
+    );
 
     if (!resp.ok) {
         const text = await resp.text();
-        throw new Error(`Video file upload failed (${resp.status}): ${text}`);
+        console.error("[video-client] uploadFileByUrl upstream error", resp.status, text.slice(0, 200));
+        throw new Error(`Video file upload failed: HTTP ${resp.status}`);
     }
 
     const data = await resp.json();
     if (!data.success && data.code !== 200) {
-        throw new Error(`Video file upload failed: ${data.msg ?? JSON.stringify(data)}`);
+        console.error("[video-client] uploadFileByUrl non-success body", data);
+        throw new Error(`Video file upload failed: upstream code ${data.code ?? "unknown"}`);
     }
 
     const hostedUrl = data?.data?.downloadUrl ?? data?.data?.fileUrl;
@@ -167,12 +260,20 @@ export async function uploadFileByUrl(fileUrl: string): Promise<string> {
 
 async function primeImages(imageUrls: string[]): Promise<string[]> {
     if (!imageUrls.length) return [];
+    // Validate every URL up front and fail the whole job on an unsafe host.
+    // (uploadFileByUrl also guards, but the catch below would otherwise fall
+    // back to forwarding the raw URL to the provider — defeating the check.)
+    for (const url of imageUrls) {
+        assertSafeImageUrl(url);
+    }
     const results = await Promise.all(
         imageUrls.map(async (url) => {
             try {
                 return await uploadFileByUrl(url);
             } catch (err) {
-                console.warn(`[video-client] Failed to upload image, using original URL: ${err}`);
+                console.warn(
+                    `[video-client] Failed to upload image, using original URL: ${err instanceof Error ? err.message : err}`,
+                );
                 return url;
             }
         }),

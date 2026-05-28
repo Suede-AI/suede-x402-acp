@@ -9,7 +9,8 @@ export async function executeJob(request: any): Promise<ExecuteJobResult> {
     duration: 8,
     aspectRatio: "9:16",   // vertical — optimized for social feeds
     mode: "std",           // faster for meme content
-    sound: false,
+    // Canonical default: sound on, buyer-overridable (matches the v2 runtime).
+    sound: typeof request.sound === "boolean" ? request.sound : true,
     imageUrls,
   });
 

@@ -25,6 +25,10 @@ const ENV_BASE_URL = "VIRTUALS_V2_COMPUTE_BASE_URL";
 const DEFAULT_MODEL = "anthropic/claude-haiku-4-5";
 const DEFAULT_BASE_URL = "https://compute.virtuals.io";
 
+/** Hard per-request timeout for the compute LLM call — generous for the largest
+ * template, but bounds a hung connection so the inflight job key is always released. */
+const CONSULTING_TIMEOUT_MS = 180_000;
+
 /** Per-service prompt configuration. */
 interface PromptTemplate {
   /** System prompt — sets the analyst persona and output contract. */
@@ -510,14 +514,22 @@ export async function runConsultingAnalysis(
     max_tokens: template.maxTokens ?? 2500,
   };
 
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), CONSULTING_TIMEOUT_MS);
+  let resp: Response;
+  try {
+    resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      signal: ac.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!resp.ok) {
     // SECURITY: Some upstream APIs echo Bearer tokens in error bodies (e.g.

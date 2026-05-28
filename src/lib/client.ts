@@ -16,6 +16,8 @@ const client = axios.create({
   headers: {
     "x-api-key": process.env.LITE_AGENT_API_KEY,
   },
+  // Bound every ACP REST call so a hung upstream cannot stall the worker.
+  timeout: 30_000,
 });
 
 client.interceptors.response.use(

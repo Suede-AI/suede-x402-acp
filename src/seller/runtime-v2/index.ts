@@ -22,73 +22,10 @@ import { dispatch, listRegistered } from "./dispatch.js";
 import { assertReady as assertConsultingReady } from "./clients/consulting-client.js";
 import { assertReady as assertVideoReady } from "./clients/video-client.js";
 import { assertReady as assertMusicReady } from "./clients/music-client-v2.js";
+import { resolveOfferingName, resolveRequirement } from "./dispatch-helpers.js";
 
-// -- helpers --
-
-/**
- * Extract the offering name from a JobSession. v2 sets the job's `description`
- * field to the offering name when `createJobFromOffering` is used by the
- * buyer; for safety we also try to JSON-parse it.
- */
-async function resolveOfferingName(
-  session: JobSession
-): Promise<string | undefined> {
-  let description: string | null = null;
-
-  if (session.job?.description) {
-    description = session.job.description;
-  } else {
-    try {
-      const job = await session.fetchJob();
-      description = job?.description ?? null;
-    } catch {
-      return undefined;
-    }
-  }
-
-  if (!description) return undefined;
-
-  const trimmed = description.trim();
-  if (!trimmed) return undefined;
-
-  // Some buyers stuff JSON into description; if it parses and has a `name`
-  // field, prefer that. Otherwise fall back to the raw string.
-  try {
-    const parsed = JSON.parse(trimmed);
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      typeof (parsed as { name?: unknown }).name === "string"
-    ) {
-      return (parsed as { name: string }).name;
-    }
-  } catch {
-    // not JSON — that's fine
-  }
-
-  return trimmed;
-}
-
-/**
- * Walk a session's entries looking for the most recent `requirement` message
- * from the buyer. Falls back to {} when no requirement has been sent yet.
- */
-function resolveRequirement(session: JobSession): Record<string, unknown> {
-  for (let i = session.entries.length - 1; i >= 0; i--) {
-    const e = session.entries[i];
-    if (e.kind === "message" && e.contentType === "requirement") {
-      try {
-        const parsed = JSON.parse(e.content);
-        if (parsed && typeof parsed === "object") {
-          return parsed as Record<string, unknown>;
-        }
-      } catch {
-        return { raw: e.content };
-      }
-    }
-  }
-  return {};
-}
+// resolveOfferingName + resolveRequirement live in ./dispatch-helpers.ts so
+// they can be unit-tested without importing this module (which boots the agent).
 
 // -- main --
 
@@ -143,8 +80,19 @@ export async function main(): Promise<void> {
           : `  contentType=${entry.contentType}`)
     );
 
-    if (entry.kind !== "system") return;
-    if (entry.event.type !== "job.funded") return;
+    // Dispatch fires on a live `job.funded` system event. On restart the SDK
+    // hydrates active jobs by replaying only the LAST room entry — if the buyer
+    // sent anything after funding (e.g. a requirement/chat message), that last
+    // entry is not `job.funded`, so a funded-but-undelivered job would never
+    // dispatch (buyer paid, never delivered). Also fire when the hydrated
+    // session is still in the `funded` state but the replayed entry isn't the
+    // funding event. The inflight Set plus the `funded` status check guard
+    // against double-dispatch: a submitted/completed job is no longer `funded`.
+    const isFundedEvent =
+      entry.kind === "system" && entry.event.type === "job.funded";
+    const isHydratedFundedSession =
+      session.status === "funded" && !isFundedEvent;
+    if (!isFundedEvent && !isHydratedFundedSession) return;
 
     const dedupeKey = `${session.chainId}:${session.jobId}`;
     if (inflight.has(dedupeKey)) {
@@ -227,6 +175,10 @@ export async function main(): Promise<void> {
   });
   process.on("unhandledRejection", (reason) => {
     console.error("[v2-seller] unhandledRejection:", reason);
+    // Match uncaughtException: an unhandled rejection leaves the worker in an
+    // undefined state. Exit non-zero so the supervisor restarts cleanly rather
+    // than continuing to accept paid jobs we may not be able to fulfil.
+    void shutdown("unhandledRejection", 1);
   });
 
   await agent.start(() => {

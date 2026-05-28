@@ -72,14 +72,9 @@ export function connectAcpSocket(opts: AcpSocketOptions): () => void {
     socket.disconnect();
   };
 
-  process.on("SIGINT", () => {
-    disconnect();
-    process.exit(0);
-  });
-  process.on("SIGTERM", () => {
-    disconnect();
-    process.exit(0);
-  });
-
+  // Signal handling (SIGINT/SIGTERM) lives in the seller runtime's central
+  // setupCleanupHandlers, which invokes this returned disconnect during
+  // teardown. Registering process handlers here too would double-handle
+  // signals and race the seller's own cleanup (removePidFromConfig).
   return disconnect;
 }

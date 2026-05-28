@@ -454,45 +454,11 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
     return;
   }
 
-  if (url.pathname === "/") {
-    send(res, ctx, 200, home(), "text/html; charset=utf-8");
-    return;
-  }
-
-  if (url.pathname === "/llms.txt") {
-    const file = loadDiscoveryFile("llms.txt");
-    send(res, ctx, 200, file.body, file.contentType);
-    return;
-  }
-
-  if (url.pathname === "/openapi.json") {
-    sendJson(res, ctx, 200, openapi());
-    return;
-  }
-
-  if (url.pathname === "/discovery") {
-    sendJson(res, ctx, 200, unifiedDiscovery());
-    return;
-  }
-
-  if (url.pathname === "/.well-known/agent-card.json") {
-    sendJson(res, ctx, 200, agentCard());
-    return;
-  }
-
-  if (url.pathname === "/.well-known/agent.yml") {
-    const file = loadDiscoveryFile("discovery/.well-known/agent.yml");
-    send(res, ctx, 200, file.body, file.contentType);
-    return;
-  }
-
-  if (url.pathname === "/.well-known/x402.json") {
-    sendJson(res, ctx, 200, x402Manifest());
-    return;
-  }
-
-  if (url.pathname === "/.well-known/the402.json") {
-    sendJson(res, ctx, 200, the402Manifest());
+  // Static discovery payloads are built once at boot (see STATIC_ROUTES) — env
+  // is fixed at load, so there is nothing to recompute per request.
+  const staticRoute = STATIC_ROUTES[url.pathname];
+  if (staticRoute) {
+    send(res, ctx, 200, staticRoute.body, staticRoute.contentType);
     return;
   }
 
@@ -516,6 +482,34 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
   notFound(res, ctx);
 }
 
-createServer(handle).listen(PORT, () => {
-  console.log(`Johnny Suede x402 discovery hub listening on ${PORT}`);
-});
+const JSON_CT = "application/json; charset=utf-8";
+
+// Static discovery payloads, serialized once at module load. Env vars are read
+// into module-level consts at load, so these never change at runtime — building
+// them per request was pure waste (file reads + JSON.parse + JSON.stringify).
+const STATIC_ROUTES: Record<string, { body: string; contentType: string }> = {
+  "/": { body: home(), contentType: "text/html; charset=utf-8" },
+  "/llms.txt": loadDiscoveryFile("llms.txt"),
+  "/openapi.json": { body: JSON.stringify(openapi(), null, 2), contentType: JSON_CT },
+  "/discovery": { body: JSON.stringify(unifiedDiscovery(), null, 2), contentType: JSON_CT },
+  "/.well-known/agent-card.json": {
+    body: JSON.stringify(agentCard(), null, 2),
+    contentType: JSON_CT,
+  },
+  "/.well-known/agent.yml": loadDiscoveryFile("discovery/.well-known/agent.yml"),
+  "/.well-known/x402.json": { body: JSON.stringify(x402Manifest(), null, 2), contentType: JSON_CT },
+  "/.well-known/the402.json": {
+    body: JSON.stringify(the402Manifest(), null, 2),
+    contentType: JSON_CT,
+  },
+};
+
+// Exported for unit tests, which exercise handle() against mock req/res objects
+// without binding a port.
+export { handle };
+
+if (process.env.NODE_ENV !== "test") {
+  createServer(handle).listen(PORT, () => {
+    console.log(`Johnny Suede x402 discovery hub listening on ${PORT}`);
+  });
+}

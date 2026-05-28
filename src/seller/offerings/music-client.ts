@@ -40,6 +40,24 @@ const SUEDE_API_BASE = (process.env.SUEDE_API_BASE_URL ?? "https://app.suedeai.a
 const POLL_MAX_ATTEMPTS = 240;
 const POLL_INTERVAL_MS = 5_000;
 
+/** Hard per-request timeout so a hung Suede backend cannot block the job forever. */
+const MUSIC_TIMEOUT_MS = 120_000;
+
+/** fetch() with an AbortController deadline; the timer is always cleared. */
+async function fetchWithTimeout(
+  url: string,
+  opts: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: ac.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function requireApiKey(): string {
   if (!SUEDE_API_KEY) {
     throw new Error(
@@ -144,15 +162,23 @@ export async function generateMusic(
     ...(opts.tags ? { tags: opts.tags } : {}),
   };
 
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: jsonHeaders(opts.idempotencyKey),
-    body: JSON.stringify(body),
-  });
+  const resp = await fetchWithTimeout(
+    url,
+    {
+      method: "POST",
+      headers: jsonHeaders(opts.idempotencyKey),
+      body: JSON.stringify(body),
+    },
+    MUSIC_TIMEOUT_MS,
+  );
 
   if (!resp.ok) {
+    // SECURITY: do not include the upstream body in the thrown message — it is
+    // forwarded to the ACP buyer via deliverJobFailure and may contain internal
+    // detail or echoed credentials. Log server-side only.
     const text = await resp.text();
-    throw new Error(`Suede music generation failed (${resp.status}): ${text}`);
+    console.error("[music-client] upstream error", resp.status, text.slice(0, 200));
+    throw new Error(`Suede music generation failed: HTTP ${resp.status}`);
   }
 
   const data = (await resp.json()) as SuedeMusicGenerateResult;
