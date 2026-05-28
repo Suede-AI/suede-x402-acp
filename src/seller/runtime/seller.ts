@@ -79,7 +79,7 @@ function resolveOfferingName(data: AcpJobEventData): string | undefined {
 
 function resolveServiceRequirements(
   data: AcpJobEventData
-): Record<string, any> {
+): Record<string, unknown> {
   const negotiationMemo = data.memos.find(
     (m) => m.nextPhase === AcpJobPhase.NEGOTIATION
   );
@@ -145,6 +145,7 @@ async function handleNewTask(data: AcpJobEventData): Promise<void> {
       return;
     }
 
+    let accepted = false;
     try {
       const { config, handlers } = await loadOffering(offeringName, agentDirName);
 
@@ -179,6 +180,7 @@ async function handleNewTask(data: AcpJobEventData): Promise<void> {
         accept: true,
         reason: "Job accepted",
       });
+      accepted = true;
 
       const funds =
         config.requiredFunds && handlers.requestAdditionalFunds
@@ -200,7 +202,19 @@ async function handleNewTask(data: AcpJobEventData): Promise<void> {
           : undefined,
       });
     } catch (err) {
-      console.error(`[seller] Error processing job ${jobId}:`, err);
+      if (accepted) {
+        // We already accepted the job, so it is in ACP NEGOTIATION state and
+        // cannot be cancelled. A requestPayment failure here leaves the job
+        // hanging until ACP expiry. Emit a distinct, grep-able WARNING so
+        // operators can alert on and manually intervene.
+        console.error(
+          `[seller] HUNG JOB WARNING: accepted jobId=${jobId} but requestPayment failed — ` +
+            `job will hang in NEGOTIATION until ACP expiry. Manual intervention may be needed.`,
+          err
+        );
+      } else {
+        console.error(`[seller] Error processing job ${jobId}:`, err);
+      }
     }
   }
 

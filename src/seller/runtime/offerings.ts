@@ -31,6 +31,13 @@ function resolveOfferingsRoot(agentDirName: string): string {
 }
 
 /**
+ * Memoizes loaded offerings so a job does not re-run two `existsSync` calls and
+ * a `readFileSync` on every dispatch. The dynamic `import()` is already cached
+ * by Node's ESM loader; this caches the offering.json read alongside it.
+ */
+const offeringCache = new Map<string, LoadedOffering>();
+
+/**
  * Load a named offering from `src/seller/offerings/<agentDirName>/<name>/`.
  * Expects `offering.json` and `handlers.ts` in that directory.
  */
@@ -38,6 +45,10 @@ export async function loadOffering(
   offeringName: string,
   agentDirName: string
 ): Promise<LoadedOffering> {
+  const cacheKey = `${agentDirName}:${offeringName}`;
+  const cached = offeringCache.get(cacheKey);
+  if (cached) return cached;
+
   const offeringDir = path.resolve(
     resolveOfferingsRoot(agentDirName),
     offeringName
@@ -66,7 +77,9 @@ export async function loadOffering(
     );
   }
 
-  return { config, handlers };
+  const result: LoadedOffering = { config, handlers };
+  offeringCache.set(cacheKey, result);
+  return result;
 }
 
 /**

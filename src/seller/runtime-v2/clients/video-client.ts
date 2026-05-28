@@ -80,6 +80,25 @@ const pollConfig = {
   maxAttempts: 300, // 5s * 300 = 25 minutes
 };
 
+/** Hard per-request timeout. A single create/poll response should arrive well
+ * under this; it bounds a hung socket so the inflight job key is always released. */
+const REQUEST_TIMEOUT_MS = 30_000;
+
+/** fetch() with an AbortController deadline; the timer is always cleared. */
+async function fetchWithTimeout(
+  url: string,
+  opts: RequestInit,
+  timeoutMs: number = REQUEST_TIMEOUT_MS
+): Promise<Response> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: ac.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface GenerateVideoOpts {
   prompt: string;
   aspect_ratio?: "16:9" | "9:16" | "1:1";
@@ -159,7 +178,7 @@ function buildPayload(opts: GenerateVideoOpts): Record<string, unknown> {
   return payload;
 }
 
-interface CreateResponse {
+interface CreateResponse extends Record<string, unknown> {
   jobId?: string;
   job_id?: string;
   id?: string;
@@ -242,7 +261,7 @@ export async function generateVideo(
   const headers = jsonHeaders();
   const payload = buildPayload(opts);
 
-  const createResp = await fetch(createUrl, {
+  const createResp = await fetchWithTimeout(createUrl, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),
@@ -263,7 +282,7 @@ export async function generateVideo(
   }
 
   const createData = (await createResp.json()) as CreateResponse;
-  const createDataRecord = createData as unknown as Record<string, unknown>;
+  const createDataRecord: Record<string, unknown> = createData;
   const createdStatus = extractStatus(createDataRecord);
   if (createdStatus === "failed") {
     throw new Error(
@@ -309,7 +328,18 @@ export async function generateVideo(
     // Defense-in-depth: re-check the origin on every iteration.
     assertSuedeOrigin(pollUrl);
 
-    const pollResp = await fetch(pollUrl, { headers });
+    let pollResp: Response;
+    try {
+      pollResp = await fetchWithTimeout(pollUrl, { headers });
+    } catch (err) {
+      // A single slow/timed-out poll is transient — retry next tick rather than
+      // failing the whole job. The maxAttempts ceiling bounds total wall time.
+      console.warn(
+        "[video-client] poll request failed, retrying",
+        err instanceof Error ? err.message : err
+      );
+      continue;
+    }
     if (!pollResp.ok) {
       // Transient errors are tolerated — try again next tick. Only abort on
       // 4xx that mean the job is gone or unauthorized.

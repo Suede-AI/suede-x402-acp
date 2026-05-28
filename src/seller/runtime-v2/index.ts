@@ -227,6 +227,10 @@ export async function main(): Promise<void> {
   });
   process.on("unhandledRejection", (reason) => {
     console.error("[v2-seller] unhandledRejection:", reason);
+    // Match uncaughtException: an unhandled rejection leaves the worker in an
+    // undefined state. Exit non-zero so the supervisor restarts cleanly rather
+    // than continuing to accept paid jobs we may not be able to fulfil.
+    void shutdown("unhandledRejection", 1);
   });
 
   await agent.start(() => {
