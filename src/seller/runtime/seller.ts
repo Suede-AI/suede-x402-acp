@@ -64,7 +64,7 @@ let agentDirName: string = "";
 
 // -- Job handling --
 
-function resolveOfferingName(data: AcpJobEventData): string | undefined {
+export function resolveOfferingName(data: AcpJobEventData): string | undefined {
   try {
     const negotiationMemo = data.memos.find(
       (m) => m.nextPhase === AcpJobPhase.NEGOTIATION
@@ -77,7 +77,7 @@ function resolveOfferingName(data: AcpJobEventData): string | undefined {
   }
 }
 
-function resolveServiceRequirements(
+export function resolveServiceRequirements(
   data: AcpJobEventData
 ): Record<string, unknown> {
   const negotiationMemo = data.memos.find(
@@ -93,7 +93,7 @@ function resolveServiceRequirements(
   return {};
 }
 
-async function handleNewTask(data: AcpJobEventData): Promise<void> {
+export async function handleNewTask(data: AcpJobEventData): Promise<void> {
   const jobId = data.id;
 
   console.log(`\n${"=".repeat(60)}`);
@@ -334,7 +334,10 @@ async function main() {
   console.log("[seller] Seller runtime is running. Waiting for jobs...\n");
 }
 
-main().catch((err) => {
-  console.error("[seller] Fatal error:", err);
-  process.exit(1);
-});
+// Guarded so tests can import handleNewTask without booting the socket runtime.
+if (process.env.NODE_ENV !== "test") {
+  main().catch((err) => {
+    console.error("[seller] Fatal error:", err);
+    process.exit(1);
+  });
+}
