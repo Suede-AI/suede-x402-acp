@@ -28,6 +28,10 @@ import {
 
 function setupCleanupHandlers(): void {
   const cleanup = () => {
+    // Disconnect the ACP socket (if connected) before removing the PID, so the
+    // single central handler owns teardown ordering — acpSocket no longer
+    // registers its own signal handlers.
+    socketDisconnect?.();
     removePidFromConfig();
   };
 
@@ -61,6 +65,8 @@ function setupCleanupHandlers(): void {
 
 const ACP_URL = process.env.ACP_SOCKET_URL || "https://acpx.virtuals.io";
 let agentDirName: string = "";
+// Set once connectAcpSocket() runs; invoked by setupCleanupHandlers on teardown.
+let socketDisconnect: (() => void) | undefined;
 
 // -- Job handling --
 
@@ -314,7 +320,7 @@ async function main() {
     );
   }
 
-  connectAcpSocket({
+  socketDisconnect = connectAcpSocket({
     acpUrl: ACP_URL,
     walletAddress,
     callbacks: {
