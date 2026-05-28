@@ -143,8 +143,19 @@ export async function main(): Promise<void> {
           : `  contentType=${entry.contentType}`)
     );
 
-    if (entry.kind !== "system") return;
-    if (entry.event.type !== "job.funded") return;
+    // Dispatch fires on a live `job.funded` system event. On restart the SDK
+    // hydrates active jobs by replaying only the LAST room entry — if the buyer
+    // sent anything after funding (e.g. a requirement/chat message), that last
+    // entry is not `job.funded`, so a funded-but-undelivered job would never
+    // dispatch (buyer paid, never delivered). Also fire when the hydrated
+    // session is still in the `funded` state but the replayed entry isn't the
+    // funding event. The inflight Set plus the `funded` status check guard
+    // against double-dispatch: a submitted/completed job is no longer `funded`.
+    const isFundedEvent =
+      entry.kind === "system" && entry.event.type === "job.funded";
+    const isHydratedFundedSession =
+      session.status === "funded" && !isFundedEvent;
+    if (!isFundedEvent && !isHydratedFundedSession) return;
 
     const dedupeKey = `${session.chainId}:${session.jobId}`;
     if (inflight.has(dedupeKey)) {
