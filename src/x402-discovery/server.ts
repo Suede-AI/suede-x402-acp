@@ -516,6 +516,12 @@ function handle(req: IncomingMessage, res: ServerResponse): void {
   notFound(res, ctx);
 }
 
-createServer(handle).listen(PORT, () => {
-  console.log(`Johnny Suede x402 discovery hub listening on ${PORT}`);
-});
+// Exported for unit tests, which exercise handle() against mock req/res objects
+// without binding a port.
+export { handle };
+
+if (process.env.NODE_ENV !== "test") {
+  createServer(handle).listen(PORT, () => {
+    console.log(`Johnny Suede x402 discovery hub listening on ${PORT}`);
+  });
+}
