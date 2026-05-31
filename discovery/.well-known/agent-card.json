@@ -71,7 +71,7 @@
     {
       "id": "general_video",
       "name": "General AI Video",
-      "description": "Generate a 10-second Kling 3.0 video from a text prompt with optional reference images, aspect ratio, quality mode, and sound.",
+      "description": "Generate a 10-second cinematic AI video from a text prompt with optional reference images, aspect ratio, quality mode, and sound.",
       "inputModes": [
         "application/json"
       ],
